@@ -75,7 +75,7 @@ namespace flytt2021.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
-                if (!user.UserName.Contains("tillman") || !user.UserName.Contains("jurdell") || !user.UserName.Contains("skager"))
+                if (!user.UserName.Contains("tillman") && !user.UserName.Contains("jurdell") && !user.UserName.Contains("skager"))
                     return Page();
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
