@@ -21,7 +21,10 @@ namespace flytt2021.Data
         }
         public async Task<int> AddMovingboxAsync(Movingbox newbox)
         {
-            await _dbContext.Movingboxes.AddAsync(newbox);
+            if(newbox.Id != 0)
+                _dbContext.Movingboxes.Update(newbox);
+            else
+                await _dbContext.Movingboxes.AddAsync(newbox);
             _dbContext.SaveChanges();
 
             return newbox.Id;
@@ -35,8 +38,11 @@ namespace flytt2021.Data
         }
         public async Task AddBoxOwnerAsync(BoxOwner boxOwner)
         {
-            if(!_dbContext.BoxOwners.Any(bo => bo.Name == boxOwner.Name))
+            if (!_dbContext.BoxOwners.Any(bo => bo.Name == boxOwner.Name))
+            {
                 await _dbContext.BoxOwners.AddAsync(boxOwner);
+                await _dbContext.SaveChangesAsync();
+            }
         }
     }
 }

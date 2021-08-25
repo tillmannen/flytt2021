@@ -2,8 +2,10 @@
 @attribute [Authorize]
 
 @using flytt2021.Data
+@using Microsoft.AspNetCore.Identity;
 
 @inject MovingboxService MovingboxService
+@inject UserService UserService
 
     <h1>Flyttkartonger</h1>
 
@@ -27,7 +29,7 @@
                 @foreach (var box in movingboxes)
                 {
                 <tr>
-                    <td>@box.Id</td>
+                    <td><a href="/boxes/add/@box.Id">@box.Id</a></td>
                     <td>@box.Marking</td>
                     <td>@box.Contents</td>
                     <td>@box.Destination</td>
@@ -54,10 +56,12 @@
     }
 
 @code {
-        private IEnumerable<Movingbox> movingboxes;
+    private IEnumerable<Movingbox> movingboxes;
+    private IEnumerable<IdentityUser> users;
 
-        protected override async Task OnInitializedAsync()
-        {
-            movingboxes = await MovingboxService.GetMovingboxesAsync();
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        movingboxes = await MovingboxService.GetMovingboxesAsync();
+        users = UserService.GetAllUsers(); 
+    }
     }

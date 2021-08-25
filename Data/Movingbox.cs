@@ -16,8 +16,6 @@ namespace flytt2021.Data
         public Floor DestinationFloor { get; set; }
         public string Destination { get; set; }
         public string PackedBy { get; set; }
-        [Required]
-        [Display(Name = "Ägare")]
         public BoxOwner BoxOwner { get; set; }
         public bool IsUnpacked { get; set; } = false;
     }
