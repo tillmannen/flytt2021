@@ -1,11 +1,15 @@
 ﻿@page "/boxes/added/{Id:int}"
 @attribute [Authorize]
 
+@using flytt2021.Data
+
+@inject MovingboxService MovingboxService
+
 <h3>Klart!</h3>
 
 <div class="box-added">
     <p>Den nya lådan har nummer:</p>
-    <div class="box-number">@Id</div>
+    <div class="box-number @color">@Id</div>
     <div class="new-box-button">
         <form>
             <a href="/boxes/add" class="btn btn-primary">Ny Låda</a>
@@ -17,5 +21,24 @@
 @code {
     [Parameter]
     public int Id { get; set; }
+    public string color { get; set; } = "black";
 
+    private Movingbox box;
+
+    protected override async Task OnInitializedAsync()
+    {
+        box = await MovingboxService.GetMovingboxAsync(Id);
+        switch (box.DestinationFloor)
+        {
+            case Floor.Basement:
+                color = "green";
+                break;
+            case Floor.Middle:
+                color = "yellow";
+                break;
+            case Floor.Upper:
+                color = "red";
+                break;
+        }
+    }
 }

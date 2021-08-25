@@ -60,6 +60,16 @@ a, .btn-link {
     color: #fff;
     background-color: #000;
 }
+.green{
+    background-color: green;
+}
+.yellow{
+    background-color: yellow;
+    color: black;
+}
+.red{
+    background-color: red;
+}
 .box-added {
     text-align: center;
 }
