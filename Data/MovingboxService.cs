@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace flytt2021.Data
         }
         public async Task<int> AddMovingboxAsync(Movingbox newbox)
         {
-
             await _dbContext.Movingboxes.AddAsync(newbox);
             _dbContext.SaveChanges();
 
