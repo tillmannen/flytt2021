@@ -48,3 +48,21 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.box-number {
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    text-align: center;
+    display: flex;
+    line-height: 300px;
+    font-size: 90px;
+    color: #fff;
+    background-color: #000;
+}
+.box-added {
+    text-align: center;
+}
+.new-box-button {
+    padding-top: 20px;
+}

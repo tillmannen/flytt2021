@@ -1,0 +1,60 @@
+﻿@using flytt2021.Data
+@inject MovingboxService MovingboxService
+@attribute [Authorize]
+
+@if (boxOwners == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="form-group">
+        <label for="Item" class="control-label">Ägare av lådan</label>
+        <select id="Item" class="form-control" @bind="@Item">
+            @foreach (var owner in boxOwners)
+            {
+                @if (Item != null && String.Equals(owner.Name, Item,
+  StringComparison.OrdinalIgnoreCase))
+                {
+                    <option selected value="@owner.Name">@owner.Name</option>
+                }
+                else
+                {
+                    <option value="@owner.Name">@owner.Name</option>
+                }
+            }
+        </select>
+
+    </div>
+}
+
+
+@code {
+    private string item { get; set; }
+    private IEnumerable<BoxOwner> boxOwners;
+
+    protected override async Task OnInitializedAsync()
+    {
+        boxOwners = await MovingboxService.GetBoxOwnersAsync();
+    }
+
+    [Parameter]
+    public string Item
+    {
+        get { return item; }
+        set
+        {
+            if (item != value)
+            {
+                item = value;
+                if (ItemChanged.HasDelegate)
+                {
+                    ItemChanged.InvokeAsync(value);
+                }
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ItemChanged { get; set; }
+}

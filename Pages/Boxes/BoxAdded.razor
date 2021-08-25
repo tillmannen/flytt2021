@@ -1,0 +1,21 @@
+﻿@page "/boxes/added/{Id:int}"
+@attribute [Authorize]
+
+<h3>Klart!</h3>
+
+<div class="box-added">
+    <p>Den nya lådan har nummer:</p>
+    <div class="box-number">@Id</div>
+    <div class="new-box-button">
+        <form>
+            <a href="/boxes/add" class="btn btn-primary">Ny Låda</a>
+        </form>
+    </div>
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+}

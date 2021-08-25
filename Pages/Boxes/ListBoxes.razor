@@ -1,0 +1,63 @@
+﻿@page "/boxes/list"
+@attribute [Authorize]
+
+@using flytt2021.Data
+
+@inject MovingboxService MovingboxService
+
+    <h1>Flyttkartonger</h1>
+
+    @if (movingboxes == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nummer</th>
+                    <th>Märkning/Utseende</th>
+                    <th>Innehåll</th>
+                    <th>Destination</th>
+                    <th>Våning</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var box in movingboxes)
+                {
+                <tr>
+                    <td>@box.Id</td>
+                    <td>@box.Marking</td>
+                    <td>@box.Contents</td>
+                    <td>@box.Destination</td>
+                    @switch (@box.DestinationFloor)
+                    {
+                        case Floor.Upper:
+                            <td>Övervåning</td>
+                            break;
+                        case Floor.Middle:
+                            <td>Övervåning</td>
+                            break;
+                        case Floor.Basement:
+                            <td>Övervåning</td>
+                            break;
+                        default:
+                            <td>Oklart</td>
+                            break;
+                    }
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+@code {
+        private IEnumerable<Movingbox> movingboxes;
+
+        protected override async Task OnInitializedAsync()
+        {
+            movingboxes = await MovingboxService.GetMovingboxesAsync();
+        }
+    }

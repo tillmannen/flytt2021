@@ -1,0 +1,83 @@
+﻿@page "/boxes/add"
+
+@using flytt2021.Data
+@inject MovingboxService MovingboxService
+@inject NavigationManager NavigationManager
+
+<h1>Flyttkartong</h1>
+
+@if (existingMovingboxes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<EditForm Model="@newBox" OnValidSubmit="SaveBox">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Contents" class="control-label">Innehåll</label>
+                <textarea form="Contents" class="form-control" style="height:200px" @bind="@newBox.Contents"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="Marking" class="control-label">Lådans utseende</label>
+                <input form="Marking" class="form-control" @bind="@newBox.Marking" />
+            </div>
+            <div class="form-group">
+                <label for="Destination" class="control-label">Destination</label>
+                <input form="Destination" class="form-control" @bind="@newBox.Destination" />
+            </div>
+            <div class="form-group">
+                <label for="floor" class="control-label">Våning</label>
+                <select form="floor" @bind="@newBox.DestinationFloor" class="form-control">
+                    <option value="Upper">Övervåning</option>
+                    <option value="Middle">Mellanplanet</option>
+                    <option value="Basement">Källare</option>
+                </select>
+            </div>
+            <BoxOwnerSelectList @bind-Item="@selectedBoxOwnerName"></BoxOwnerSelectList>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Spara" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Rensa formuläret" />
+            </div>
+        </div>
+    </div>
+
+</EditForm>
+
+}
+
+@code {
+    private IEnumerable<Movingbox> existingMovingboxes;
+    private IEnumerable<BoxOwner> boxOwners;
+    private Movingbox newBox = new Movingbox();
+    private string selectedBoxOwnerName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
+        boxOwners = await MovingboxService.GetBoxOwnersAsync();
+    }
+
+    protected async void SaveBox()
+    {
+        newBox.BoxOwner = boxOwners.FirstOrDefault(bo => bo.Name == selectedBoxOwnerName);
+        var newid = await MovingboxService.AddMovingboxAsync(newBox);
+
+        if(newid > 0)
+            NavigationManager.NavigateTo("/boxes/added/"+newid);
+    }
+    protected void Cancel()
+    {
+        newBox = new Movingbox();
+    }
+}

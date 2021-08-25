@@ -33,18 +33,22 @@ namespace flytt2021
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
+                    Configuration.GetConnectionString("IdentityConnection")));
+            services.AddDbContext<FlyttDbContext>(options =>
+                options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddSingleton<WeatherForecastService>();
+            services.AddTransient<MovingboxService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FlyttDbContext dbContext)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +61,8 @@ namespace flytt2021
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            dbContext.Database.Migrate();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
