@@ -5,13 +5,13 @@
 @inject NavigationManager NavigationManager
 @inject MovingboxService service
 
-<h3>Ny lådägare</h3>
+<h3>AddBoxOwner</h3>
 
 <EditForm Model="boxOwner" OnValidSubmit="SaveBoxOwner">
     <div class="row"> 
         <div class="col-md-8">
             <div class="form-group">
-                <label for="name" class="control-label">Namn</label>
+                <label for="name" class="form-control">Namn</label>
                 <InputText @bind-Value="@boxOwner.Name" class="form-control"></InputText>
             </div>
         </div>
@@ -31,6 +31,6 @@
     private async void SaveBoxOwner()
     {
         await service.AddBoxOwnerAsync(boxOwner);
-        NavigationManager.NavigateTo("");
+        NavigationManager.NavigateTo("/index");
     }
 }

@@ -15,15 +15,9 @@ namespace flytt2021.Data
         [Display(Name = "Våning")]
         public Floor DestinationFloor { get; set; }
         public string Destination { get; set; }
-        public string PackedBy { get; set; }
+        public Packer Packer { get; set; }
         public BoxOwner BoxOwner { get; set; }
         public bool IsUnpacked { get; set; } = false;
-    }
-
-    public class BoxOwner
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 
     public enum Floor

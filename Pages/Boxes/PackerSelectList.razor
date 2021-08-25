@@ -2,25 +2,25 @@
 @inject MovingboxService MovingboxService
 @attribute [Authorize]
 
-@if (boxOwners == null)
+@if (packers == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
     <div class="form-group">
-        <label for="Item" class="control-label">Ägare av lådan</label>
+        <label for="Item" class="control-label">Packare</label>
         <select id="Item" class="form-control" @bind="@Item">
-            @foreach (var owner in boxOwners)
+            @foreach (var packer in packers)
             {
-                @if (Item != null && String.Equals(owner.Name, Item,
-  StringComparison.OrdinalIgnoreCase))
+                @if (Item != null && String.Equals(packer.Name, Item,
+ StringComparison.OrdinalIgnoreCase))
                 {
-                    <option selected value="@owner.Name">@owner.Name</option>
+                    <option selected value="@packer.Name">@packer.Name</option>
                 }
                 else
                 {
-                    <option value="@owner.Name">@owner.Name</option>
+                    <option value="@packer.Name">@packer.Name</option>
                 }
             }
         </select>
@@ -31,11 +31,11 @@ else
 
 @code {
     private string item { get; set; }
-    private IEnumerable<BoxOwner> boxOwners;
+    private IEnumerable<Packer> packers;
 
     protected override async Task OnInitializedAsync()
     {
-        boxOwners = MovingboxService.GetBoxOwners();
+        packers = MovingboxService.GetPackers();
     }
 
     [Parameter]

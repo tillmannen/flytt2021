@@ -13,7 +13,7 @@
 }
 else
 {
-    <EditForm Model="@newBox" OnValidSubmit="SaveBox">
+    <EditForm EditContext="editContext" OnValidSubmit="SaveBox">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -39,7 +39,8 @@ else
                         <option value="Basement">Källare</option>
                     </select>
                 </div>
-                <BoxOwnerSelectList @bind-Item="@selectedBoxOwnerName"></BoxOwnerSelectList>
+                <BoxOwnerSelectList @bind-Item="@selectedBoxOwnerName" OnItemChange="ResetValidation"></BoxOwnerSelectList>
+                <PackerSelectList @bind-Item="@selectedPackerName" OnItemChange="ResetValidation"></PackerSelectList>
 
             </div>
         </div>
@@ -63,8 +64,12 @@ else
 
     private IEnumerable<Movingbox> existingMovingboxes;
     private IEnumerable<BoxOwner> boxOwners;
+    private IEnumerable<Packer> packers;
     private Movingbox newBox = new Movingbox();
     private string selectedBoxOwnerName = "";
+    private string selectedPackerName = "";
+
+    EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,17 +78,39 @@ else
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.Id == Id);
             selectedBoxOwnerName = newBox.BoxOwner?.Name;
+            selectedPackerName = newBox.Packer?.Name;
         }
-        boxOwners = await MovingboxService.GetBoxOwnersAsync();
+        packers = MovingboxService.GetPackers();
+        boxOwners = MovingboxService.GetBoxOwners();
+
+        editContext = new EditContext(newBox);
     }
 
     protected async void SaveBox()
     {
+        var messageStore = new ValidationMessageStore(editContext);
+        if (selectedPackerName == "")
+        {
+            messageStore.Add(editContext.Field("Packer"), "Välj en packare");
+            editContext.NotifyValidationStateChanged();
+        }
+        if (selectedBoxOwnerName == "")
+        {
+            messageStore.Add(editContext.Field("BoxOwner"), "Välj en lådägare");
+            editContext.NotifyValidationStateChanged();
+        }
+        if (!editContext.Validate()) return;
+
+        newBox.Packer = packers.FirstOrDefault(p => p.Name == selectedPackerName);
         newBox.BoxOwner = boxOwners.FirstOrDefault(bo => bo.Name == selectedBoxOwnerName);
         var newid = await MovingboxService.AddMovingboxAsync(newBox);
 
         if (newid > 0)
             NavigationManager.NavigateTo("/boxes/added/" + newid);
+    }
+    protected void ResetValidation()
+    {
+        editContext = new EditContext(newBox);
     }
     protected void Cancel()
     {

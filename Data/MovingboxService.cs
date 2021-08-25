@@ -32,15 +32,28 @@ namespace flytt2021.Data
 
 
 
-        public async Task<IEnumerable<BoxOwner>> GetBoxOwnersAsync()
+        public IEnumerable<BoxOwner> GetBoxOwners()
         {
-            return await _dbContext.BoxOwners.ToListAsync();
+            return _dbContext.BoxOwners.ToList();
         }
         public async Task AddBoxOwnerAsync(BoxOwner boxOwner)
         {
             if (!_dbContext.BoxOwners.Any(bo => bo.Name == boxOwner.Name))
             {
                 await _dbContext.BoxOwners.AddAsync(boxOwner);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
+        public IEnumerable<Packer> GetPackers()
+        {
+            return  _dbContext.Packers.ToList();
+        }
+        public async Task AddPackerAsync(Packer packer)
+        {
+            if (!_dbContext.Packers.Any(bo => bo.Name == packer.Name))
+            {
+                await _dbContext.Packers.AddAsync(packer);
                 await _dbContext.SaveChangesAsync();
             }
         }

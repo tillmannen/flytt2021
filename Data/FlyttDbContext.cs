@@ -11,6 +11,7 @@ namespace flytt2021.Data
 
         public DbSet<Movingbox> Movingboxes { get; set; }
         public DbSet<BoxOwner> BoxOwners { get; set; }
+        public DbSet<Packer> Packers { get; set; }
 
     }
 }
