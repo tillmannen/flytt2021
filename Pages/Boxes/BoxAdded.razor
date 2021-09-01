@@ -29,15 +29,15 @@
     protected override async Task OnInitializedAsync()
     {
         box = await MovingboxService.GetMovingboxAsync(Id);
-        switch (box.DestinationFloor)
+        switch (box.DestinationFloorEnum)
         {
-            case Floor.Basement:
+            case FloorEnum.Basement:
                 color = "green";
                 break;
-            case Floor.Middle:
+            case FloorEnum.Middle:
                 color = "yellow";
                 break;
-            case Floor.Upper:
+            case FloorEnum.Upper:
                 color = "red";
                 break;
         }

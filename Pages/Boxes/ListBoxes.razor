@@ -31,19 +31,19 @@ else
             @foreach (var box in movingboxes)
             {
                 <tr>
-                    <td><a href="/boxes/add/@box.Id">@box.Id</a></td>
+                    <td><a href="/boxes/add/@box.MovingboxId">@box.MovingboxId</a></td>
                     <td>@box.Marking</td>
                     <td>@box.Contents</td>
                     <td>@box.Destination</td>
-                    @switch (@box.DestinationFloor)
+                    @switch (@box.DestinationFloorEnum)
                     {
-                        case Floor.Upper:
+                        case FloorEnum.Upper:
                             <td>Övervåning</td>
                             break;
-                        case Floor.Middle:
+                        case FloorEnum.Middle:
                             <td>Övervåning</td>
                             break;
-                        case Floor.Basement:
+                        case FloorEnum.Basement:
                             <td>Övervåning</td>
                             break;
                         default:

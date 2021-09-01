@@ -36,7 +36,7 @@ else
                 </div>
                 <div class="form-group">
                     <label for="floor" class="control-label">Våning</label>
-                    <select form="floor" @bind="@newBox.DestinationFloor" class="form-control">
+                    <select form="floor" @bind="@newBox.DestinationFloorEnum" class="form-control">
                         <option value="Upper">Övervåning</option>
                         <option value="Middle">Mellanplanet</option>
                         <option value="Basement">Källare</option>
@@ -79,7 +79,7 @@ else
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
         if (Id != null)
         {
-            newBox = existingMovingboxes.FirstOrDefault(b => b.Id == Id);
+            newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
             selectedBoxOwnerName = newBox.BoxOwner?.Name;
             selectedPackerName = newBox.Packer?.Name;
         }

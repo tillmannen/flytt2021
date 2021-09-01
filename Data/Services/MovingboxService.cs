@@ -23,17 +23,17 @@ namespace flytt2021.Data.Services
         }
         public async Task<Movingbox> GetMovingboxAsync(int id)
         {
-            return await _dbContext.Movingboxes.FirstOrDefaultAsync(b => b.Id == id);
+            return await _dbContext.Movingboxes.FirstOrDefaultAsync(b => b.MovingboxId == id);
         }
         public async Task<int> AddMovingboxAsync(Movingbox newbox)
         {
-            if(newbox.Id != 0)
+            if(newbox.MovingboxId != 0)
                 _dbContext.Movingboxes.Update(newbox);
             else
                 await _dbContext.Movingboxes.AddAsync(newbox);
             _dbContext.SaveChanges();
 
-            return newbox.Id;
+            return newbox.MovingboxId;
         }
 
 
