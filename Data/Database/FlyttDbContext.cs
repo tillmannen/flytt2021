@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using flytt2021.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace flytt2021.Data
+namespace flytt2021.Data.Database
 {
     public class FlyttDbContext : DbContext
     {

@@ -1,7 +1,10 @@
 ﻿@page "/boxes/add"
 @page "/boxes/add/{Id:int}"
+@attribute [Authorize]
 
-@using flytt2021.Data
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
+
 @inject MovingboxService MovingboxService
 @inject NavigationManager NavigationManager
 
@@ -74,7 +77,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
-        if(Id != null)
+        if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.Id == Id);
             selectedBoxOwnerName = newBox.BoxOwner?.Name;

@@ -1,11 +1,13 @@
 
+using flytt2021.Data.Database;
+using flytt2021.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace flytt2021.Data
+namespace flytt2021.Data.Services
 {
     public class MovingboxService
     {

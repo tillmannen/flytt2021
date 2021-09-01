@@ -1,6 +1,8 @@
 ﻿@page "/packers/add"
+@attribute [Authorize]
 
-@using flytt2021.Data
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
 
 @inject NavigationManager NavigationManager
 @inject MovingboxService service

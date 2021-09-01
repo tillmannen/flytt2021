@@ -1,33 +1,35 @@
 ﻿@page "/boxes/list"
 @attribute [Authorize]
 
-@using flytt2021.Data
+
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
 @using Microsoft.AspNetCore.Identity;
 
 @inject MovingboxService MovingboxService
 @inject UserService UserService
 
-    <h1>Flyttkartonger</h1>
+<h1>Flyttkartonger</h1>
 
-    @if (movingboxes == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nummer</th>
-                    <th>Märkning/Utseende</th>
-                    <th>Innehåll</th>
-                    <th>Destination</th>
-                    <th>Våning</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var box in movingboxes)
-                {
+@if (movingboxes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nummer</th>
+                <th>Märkning/Utseende</th>
+                <th>Innehåll</th>
+                <th>Destination</th>
+                <th>Våning</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var box in movingboxes)
+            {
                 <tr>
                     <td><a href="/boxes/add/@box.Id">@box.Id</a></td>
                     <td>@box.Marking</td>
@@ -50,10 +52,10 @@
                     }
 
                 </tr>
-                }
-            </tbody>
-        </table>
-    }
+            }
+        </tbody>
+    </table>
+}
 
 @code {
     private IEnumerable<Movingbox> movingboxes;
@@ -62,6 +64,6 @@
     protected override async Task OnInitializedAsync()
     {
         movingboxes = await MovingboxService.GetMovingboxesAsync();
-        users = UserService.GetAllUsers(); 
+        users = UserService.GetAllUsers();
     }
-    }
+}

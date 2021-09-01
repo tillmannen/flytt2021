@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace flytt2021.Data
+namespace flytt2021.Data.Entities
 {
     public class Movingbox
     {
