@@ -69,7 +69,7 @@ else
     private IEnumerable<BoxOwner> boxOwners;
     private IEnumerable<Packer> packers;
     private Movingbox newBox = new Movingbox();
-    private string selectedBoxOwnerName = "";
+    public string selectedBoxOwnerName = "";
     private string selectedPackerName = "";
 
     EditContext editContext;
@@ -80,8 +80,8 @@ else
         if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
-            selectedBoxOwnerName = newBox.BoxOwner?.Name;
-            selectedPackerName = newBox.Packer?.Name;
+            selectedBoxOwnerName = newBox.BoxOwner?.Name ?? "";
+            selectedPackerName = newBox.Packer?.Name ?? "";
         }
         packers = MovingboxService.GetPackers();
         boxOwners = MovingboxService.GetBoxOwners();
@@ -106,7 +106,7 @@ else
 
         newBox.Packer = packers.FirstOrDefault(p => p.Name == selectedPackerName);
         newBox.BoxOwner = boxOwners.FirstOrDefault(bo => bo.Name == selectedBoxOwnerName);
-        var newid = await MovingboxService.AddMovingboxAsync(newBox);
+        var newid = await MovingboxService.SaveMovingboxAsync(newBox);
 
         if (newid > 0)
             NavigationManager.NavigateTo("/boxes/added/" + newid);

@@ -17,7 +17,7 @@ else
             @foreach (var owner in boxOwners)
             {
                 @if (Item != null && String.Equals(owner.Name, Item,
- StringComparison.OrdinalIgnoreCase))
+StringComparison.OrdinalIgnoreCase))
                 {
                     <option selected value="@owner.Name">@owner.Name</option>
                 }
