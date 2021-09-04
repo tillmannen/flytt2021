@@ -10,8 +10,8 @@ using flytt2021.Data.Database;
 namespace flytt2021.Migrations
 {
     [DbContext(typeof(FlyttDbContext))]
-    [Migration("20210901195212_Lagt till Move som entitet")]
-    partial class LagttillMovesomentitet
+    [Migration("20210902061640_DestinationFloor_BgColor")]
+    partial class DestinationFloor_BgColor
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,6 +48,9 @@ namespace flytt2021.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<string>("BackgroundColorcode")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Colorcode")
                         .HasColumnType("nvarchar(max)");
 
@@ -83,7 +86,7 @@ namespace flytt2021.Migrations
                     b.Property<DateTime>("MoveDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ToFriedlyName")
+                    b.Property<string>("ToFriendlyName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MoveId");
