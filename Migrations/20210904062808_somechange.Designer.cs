@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flytt2021.Data.Database;
 
 namespace flytt2021.Migrations
 {
     [DbContext(typeof(FlyttDbContext))]
-    partial class FlyttDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210904062808_somechange")]
+    partial class somechange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
