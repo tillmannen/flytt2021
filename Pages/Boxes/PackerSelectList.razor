@@ -1,4 +1,7 @@
-﻿@using flytt2021.Data
+﻿
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
+
 @inject MovingboxService MovingboxService
 @attribute [Authorize]
 
@@ -14,7 +17,7 @@ else
             @foreach (var packer in packers)
             {
                 @if (Item != null && String.Equals(packer.Name, Item,
- StringComparison.OrdinalIgnoreCase))
+StringComparison.OrdinalIgnoreCase))
                 {
                     <option selected value="@packer.Name">@packer.Name</option>
                 }

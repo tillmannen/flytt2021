@@ -1,11 +1,13 @@
 
+using flytt2021.Data.Database;
+using flytt2021.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace flytt2021.Data
+namespace flytt2021.Data.Services
 {
     public class MovingboxService
     {
@@ -21,17 +23,17 @@ namespace flytt2021.Data
         }
         public async Task<Movingbox> GetMovingboxAsync(int id)
         {
-            return await _dbContext.Movingboxes.FirstOrDefaultAsync(b => b.Id == id);
+            return await _dbContext.Movingboxes.FirstOrDefaultAsync(b => b.MovingboxId == id);
         }
         public async Task<int> AddMovingboxAsync(Movingbox newbox)
         {
-            if(newbox.Id != 0)
+            if(newbox.MovingboxId != 0)
                 _dbContext.Movingboxes.Update(newbox);
             else
                 await _dbContext.Movingboxes.AddAsync(newbox);
             _dbContext.SaveChanges();
 
-            return newbox.Id;
+            return newbox.MovingboxId;
         }
 
 

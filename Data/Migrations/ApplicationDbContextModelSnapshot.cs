@@ -2,8 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using flytt2021.Data;
+using flytt2021.Data.Database;
 
 namespace flytt2021.Data.Migrations
 {

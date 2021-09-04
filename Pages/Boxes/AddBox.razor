@@ -1,7 +1,10 @@
 ﻿@page "/boxes/add"
 @page "/boxes/add/{Id:int}"
+@attribute [Authorize]
 
-@using flytt2021.Data
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
+
 @inject MovingboxService MovingboxService
 @inject NavigationManager NavigationManager
 
@@ -33,7 +36,7 @@ else
                 </div>
                 <div class="form-group">
                     <label for="floor" class="control-label">Våning</label>
-                    <select form="floor" @bind="@newBox.DestinationFloor" class="form-control">
+                    <select form="floor" @bind="@newBox.DestinationFloorEnum" class="form-control">
                         <option value="Upper">Övervåning</option>
                         <option value="Middle">Mellanplanet</option>
                         <option value="Basement">Källare</option>
@@ -74,9 +77,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
-        if(Id != null)
+        if (Id != null)
         {
-            newBox = existingMovingboxes.FirstOrDefault(b => b.Id == Id);
+            newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
             selectedBoxOwnerName = newBox.BoxOwner?.Name;
             selectedPackerName = newBox.Packer?.Name;
         }

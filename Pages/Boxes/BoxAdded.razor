@@ -1,7 +1,8 @@
 ﻿@page "/boxes/added/{Id:int}"
 @attribute [Authorize]
 
-@using flytt2021.Data
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
 
 @inject MovingboxService MovingboxService
 
@@ -28,15 +29,15 @@
     protected override async Task OnInitializedAsync()
     {
         box = await MovingboxService.GetMovingboxAsync(Id);
-        switch (box.DestinationFloor)
+        switch (box.DestinationFloorEnum)
         {
-            case Floor.Basement:
+            case FloorEnum.Basement:
                 color = "green";
                 break;
-            case Floor.Middle:
+            case FloorEnum.Middle:
                 color = "yellow";
                 break;
-            case Floor.Upper:
+            case FloorEnum.Upper:
                 color = "red";
                 break;
         }

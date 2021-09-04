@@ -1,6 +1,8 @@
 ﻿@page "/boxowners/add"
+@attribute [Authorize]
 
-@using flytt2021.Data
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
 
 @inject NavigationManager NavigationManager
 @inject MovingboxService service
@@ -8,7 +10,7 @@
 <h3>AddBoxOwner</h3>
 
 <EditForm Model="boxOwner" OnValidSubmit="SaveBoxOwner">
-    <div class="row"> 
+    <div class="row">
         <div class="col-md-8">
             <div class="form-group">
                 <label for="name" class="form-control">Namn</label>
