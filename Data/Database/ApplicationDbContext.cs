@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using flytt2021.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -92,5 +93,11 @@ namespace flytt2021.Data.Database
                 new IdentityUserRole<string>() { RoleId = "fab4fac1-c546-41de-aebc-a14da6895711", UserId = "b74ddd14-6340-4840-95c2-db12554843e5" }
                 );
         }
+    }
+
+    public class ApplicationUser : IdentityUser
+    {
+        public int? MoveId { get; set; }
+        public Move? Move { get; set; }
     }
 }

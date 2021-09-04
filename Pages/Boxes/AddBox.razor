@@ -4,6 +4,7 @@
 
 @using flytt2021.Data.Services
 @using flytt2021.Data.Entities
+@using flytt2021.Pages.Boxes.Components
 
 @inject MovingboxService MovingboxService
 @inject NavigationManager NavigationManager
@@ -34,14 +35,16 @@ else
                     <label for="Destination" class="control-label">Destination</label>
                     <input form="Destination" class="form-control" @bind="@newBox.Destination" />
                 </div>
-                <div class="form-group">
+
+                @*<div class="form-group">
                     <label for="floor" class="control-label">Våning</label>
                     <select form="floor" @bind="@newBox.DestinationFloorEnum" class="form-control">
                         <option value="Upper">Övervåning</option>
                         <option value="Middle">Mellanplanet</option>
                         <option value="Basement">Källare</option>
                     </select>
-                </div>
+                </div>*@
+                <DestinationFloorSelectList @bind-Item="@selectedDestinationFloor" OnItemChange="ResetValidation"></DestinationFloorSelectList>
                 <BoxOwnerSelectList @bind-Item="@selectedBoxOwnerName" OnItemChange="ResetValidation"></BoxOwnerSelectList>
                 <PackerSelectList @bind-Item="@selectedPackerName" OnItemChange="ResetValidation"></PackerSelectList>
 
@@ -68,9 +71,11 @@ else
     private IEnumerable<Movingbox> existingMovingboxes;
     private IEnumerable<BoxOwner> boxOwners;
     private IEnumerable<Packer> packers;
+    private IEnumerable<DestinationFloor> destinationFloors;
     private Movingbox newBox = new Movingbox();
     public string selectedBoxOwnerName = "";
     private string selectedPackerName = "";
+    private string selectedDestinationFloor = "";
 
     EditContext editContext;
 
@@ -80,11 +85,13 @@ else
         if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
-            selectedBoxOwnerName = newBox.BoxOwner?.Name ?? "";
-            selectedPackerName = newBox.Packer?.Name ?? "";
+            selectedBoxOwnerName = newBox.BoxOwner?.Name;
+            selectedPackerName = newBox.Packer?.Name;
+            selectedDestinationFloor = newBox.DestinationFloor?.Name;
         }
         packers = MovingboxService.GetPackers();
         boxOwners = MovingboxService.GetBoxOwners();
+        destinationFloors = MovingboxService.GetDestinationFloors();
 
         editContext = new EditContext(newBox);
     }
@@ -102,10 +109,18 @@ else
             messageStore.Add(editContext.Field("BoxOwner"), "Välj en lådägare");
             editContext.NotifyValidationStateChanged();
         }
+        if (selectedDestinationFloor == "")
+        {
+            messageStore.Add(editContext.Field("DestinationFloor"), "Välj en våning");
+            editContext.NotifyValidationStateChanged();
+        }
         if (!editContext.Validate()) return;
 
         newBox.Packer = packers.FirstOrDefault(p => p.Name == selectedPackerName);
         newBox.BoxOwner = boxOwners.FirstOrDefault(bo => bo.Name == selectedBoxOwnerName);
+        newBox.DestinationFloor = destinationFloors.FirstOrDefault(df => df.Name == selectedDestinationFloor);
+
+        newBox.MoveId = 1;
         var newid = await MovingboxService.SaveMovingboxAsync(newBox);
 
         if (newid > 0)

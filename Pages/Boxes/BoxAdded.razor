@@ -6,11 +6,17 @@
 
 @inject MovingboxService MovingboxService
 
+@if (box == null)
+{
+    <span>Loading...</span>
+}
+else 
+{
 <h3>Klart!</h3>
 
 <div class="box-added">
     <p>Den nya lådan har nummer:</p>
-    <div class="box-number @color">@Id</div>
+    <div class="box-number" style="background-color: @box.DestinationFloor.BackgroundColorcode; color: @box.DestinationFloor.Colorcode">@Id</div>
     <div class="new-box-button">
         <form>
             <a href="/boxes/add" class="btn btn-primary">Ny Låda</a>
@@ -18,6 +24,8 @@
     </div>
 
 </div>
+}
+
 
 @code {
     [Parameter]
@@ -29,17 +37,5 @@
     protected override async Task OnInitializedAsync()
     {
         box = await MovingboxService.GetMovingboxAsync(Id);
-        switch (box.DestinationFloorEnum)
-        {
-            case FloorEnum.Basement:
-                color = "green";
-                break;
-            case FloorEnum.Middle:
-                color = "yellow";
-                break;
-            case FloorEnum.Upper:
-                color = "red";
-                break;
-        }
     }
 }

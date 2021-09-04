@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace flytt2021.Data.Entities
 {
     public class Movingbox
     {
-
         public int MovingboxId { get; set; }
         public string Marking { get; set; }
         [Required]
@@ -68,6 +68,7 @@ namespace flytt2021.Data.Entities
         //public string ToCountry { get; set; }
     }
 
+    [Table("DestinationFloor")]
     public class DestinationFloor
     {
         public int DestinationFloorId { get; set; }
