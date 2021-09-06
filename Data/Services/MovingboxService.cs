@@ -1,10 +1,12 @@
 
 using flytt2021.Data.Database;
 using flytt2021.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace flytt2021.Data.Services
@@ -12,14 +14,19 @@ namespace flytt2021.Data.Services
     public class MovingboxService
     {
         private readonly FlyttDbContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public MovingboxService(FlyttDbContext dbContext)
+        public MovingboxService(FlyttDbContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IEnumerable<Movingbox>> GetMovingboxesAsync()
         {
-            return await _dbContext.Movingboxes.Include(mb => mb.DestinationFloor).ToListAsync();
+            int moveid = 0;
+            int.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("moveid").Value, out moveid);
+
+            return await _dbContext.Movingboxes.Where(mb => mb.MoveId == moveid).Include(mb => mb.DestinationFloor).ToListAsync();
         }
         public async Task<Movingbox> GetMovingboxAsync(int id)
         {

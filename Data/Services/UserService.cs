@@ -16,7 +16,7 @@ namespace flytt2021.Data.Services
             _context = context;
         }
 
-        public List<IdentityUser> GetAllUsers()
+        public List<FlyttUser> GetAllUsers()
         {
             return _context.Users.ToList();
         }
