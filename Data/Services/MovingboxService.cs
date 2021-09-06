@@ -19,18 +19,22 @@ namespace flytt2021.Data.Services
         }
         public async Task<IEnumerable<Movingbox>> GetMovingboxesAsync()
         {
-            return await _dbContext.Movingboxes.ToListAsync();
+            return await _dbContext.Movingboxes.Include(mb => mb.DestinationFloor).ToListAsync();
         }
         public async Task<Movingbox> GetMovingboxAsync(int id)
         {
-            var box = await _dbContext.Movingboxes.FirstOrDefaultAsync(b => b.MovingboxId == id);
-            box.DestinationFloor = await _dbContext.DestinationFloors.FirstOrDefaultAsync(df => df.DestinationFloorId == box.DestinationFloorId);
+            var box = await _dbContext.Movingboxes
+                .Include(mb => mb.DestinationFloor)
+                .Include(mb => mb.Packer)
+                .Include(mb => mb.BoxOwner)
+                .Include(mb => mb.Move)
+                .FirstOrDefaultAsync(b => b.MovingboxId == id);
 
             return box;
         }
         public async Task<int> SaveMovingboxAsync(Movingbox newbox)
         {
-            if(newbox.MovingboxId != 0)
+            if (newbox.MovingboxId != 0)
                 _dbContext.Movingboxes.Update(newbox);
             else
                 await _dbContext.Movingboxes.AddAsync(newbox);
@@ -66,9 +70,9 @@ namespace flytt2021.Data.Services
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public IEnumerable<DestinationFloor> GetDestinationFloors()
+        public IQueryable<DestinationFloor> GetDestinationFloors()
         {
-            return _dbContext.DestinationFloors.ToList();
+            return _dbContext.DestinationFloors.Where(d => true);
         }
         public async Task AddDestinationFloorAsync(DestinationFloor floor)
         {

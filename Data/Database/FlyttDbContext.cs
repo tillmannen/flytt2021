@@ -12,7 +12,6 @@ namespace flytt2021.Data.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Movingbox>().HasOne(b => b.DestinationFloor).WithMany().HasForeignKey(b=>b.DestinationFloorId);
         }
 
         public DbSet<Movingbox> Movingboxes { get; set; }

@@ -12,11 +12,11 @@
 else
 {
     <div class="form-group">
-        <label for="Item" class="control-label">Ägare av lådan</label>
+        <label for="Item" class="control-label">Våning</label>
         <select id="Item" class="form-control" @bind="@Item">
             @foreach (var owner in floors)
             {
-                @if (Item != null && String.Equals(owner.Name, Item,
+                @if (Item != null && String.Equals(owner.Name, Item.Name,
 StringComparison.OrdinalIgnoreCase))
                 {
                     <option selected value="@owner.Name">@owner.Name</option>
@@ -33,7 +33,7 @@ StringComparison.OrdinalIgnoreCase))
 
 
 @code {
-    private string item { get; set; }
+    private DestinationFloor item { get; set; }
     private IEnumerable<DestinationFloor> floors;
 
     protected override async Task OnInitializedAsync()
@@ -42,7 +42,7 @@ StringComparison.OrdinalIgnoreCase))
     }
 
     [Parameter]
-    public string Item
+    public DestinationFloor Item
     {
         get { return item; }
         set
@@ -60,7 +60,7 @@ StringComparison.OrdinalIgnoreCase))
     }
 
     [Parameter]
-    public EventCallback<string> ItemChanged { get; set; }
+    public EventCallback<DestinationFloor> ItemChanged { get; set; }
     [Parameter]
     public EventCallback OnItemChange { get; set; }
 }

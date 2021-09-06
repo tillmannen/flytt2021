@@ -36,17 +36,42 @@ else
                     <input form="Destination" class="form-control" @bind="@newBox.Destination" />
                 </div>
 
-                @*<div class="form-group">
+                <div class="form-group">
                     <label for="floor" class="control-label">Våning</label>
-                    <select form="floor" @bind="@newBox.DestinationFloorEnum" class="form-control">
-                        <option value="Upper">Övervåning</option>
-                        <option value="Middle">Mellanplanet</option>
-                        <option value="Basement">Källare</option>
+                    <select form="floor" @bind="@newBox.DestinationFloorId" class="form-control">
+                        @if (destinationFloors != null)
+                        {
+                            @foreach (var floor in destinationFloors)
+                            {
+                                <option value="@floor.DestinationFloorId">@floor.Name</option>
+                            }
+                        }
                     </select>
-                </div>*@
-                <DestinationFloorSelectList @bind-Item="@selectedDestinationFloor" OnItemChange="ResetValidation"></DestinationFloorSelectList>
-                <BoxOwnerSelectList @bind-Item="@selectedBoxOwnerName" OnItemChange="ResetValidation"></BoxOwnerSelectList>
-                <PackerSelectList @bind-Item="@selectedPackerName" OnItemChange="ResetValidation"></PackerSelectList>
+                </div>
+                <div class="form-group">
+                    <label for="floor" class="control-label">Ägare av lådan</label>
+                    <select form="floor" @bind="@newBox.BoxOwnerId" class="form-control">
+                        @if (boxOwners != null)
+                        {
+                            @foreach (var owner in boxOwners)
+                            {
+                                <option value="@owner.Id">@owner.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="floor" class="control-label">Packare</label>
+                    <select form="floor" @bind="@newBox.PackerId" class="form-control">
+                        @if (packers != null)
+                        {
+                            @foreach (var packer in packers)
+                            {
+                                <option value="@packer.Id">@packer.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
 
             </div>
         </div>
@@ -73,9 +98,6 @@ else
     private IEnumerable<Packer> packers;
     private IEnumerable<DestinationFloor> destinationFloors;
     private Movingbox newBox = new Movingbox();
-    public string selectedBoxOwnerName = "";
-    private string selectedPackerName = "";
-    private string selectedDestinationFloor = "";
 
     EditContext editContext;
 
@@ -85,9 +107,6 @@ else
         if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
-            selectedBoxOwnerName = newBox.BoxOwner?.Name;
-            selectedPackerName = newBox.Packer?.Name;
-            selectedDestinationFloor = newBox.DestinationFloor?.Name;
         }
         packers = MovingboxService.GetPackers();
         boxOwners = MovingboxService.GetBoxOwners();
@@ -99,26 +118,22 @@ else
     protected async void SaveBox()
     {
         var messageStore = new ValidationMessageStore(editContext);
-        if (selectedPackerName == "")
-        {
-            messageStore.Add(editContext.Field("Packer"), "Välj en packare");
-            editContext.NotifyValidationStateChanged();
-        }
-        if (selectedBoxOwnerName == "")
-        {
-            messageStore.Add(editContext.Field("BoxOwner"), "Välj en lådägare");
-            editContext.NotifyValidationStateChanged();
-        }
-        if (selectedDestinationFloor == "")
-        {
-            messageStore.Add(editContext.Field("DestinationFloor"), "Välj en våning");
-            editContext.NotifyValidationStateChanged();
-        }
+        //if (newBox.PackerId == null)
+        //{
+        //    messageStore.Add(editContext.Field("Packer"), "Välj en packare");
+        //    editContext.NotifyValidationStateChanged();
+        //}
+        //if (newBox.BoxOwnerId == null)
+        //{
+        //    messageStore.Add(editContext.Field("BoxOwner"), "Välj en lådägare");
+        //    editContext.NotifyValidationStateChanged();
+        //}
+        //if (newBox.DestinationFloorId == null)
+        //{
+        //    messageStore.Add(editContext.Field("DestinationFloor"), "Välj en våning");
+        //    editContext.NotifyValidationStateChanged();
+        //}
         if (!editContext.Validate()) return;
-
-        newBox.Packer = packers.FirstOrDefault(p => p.Name == selectedPackerName);
-        newBox.BoxOwner = boxOwners.FirstOrDefault(bo => bo.Name == selectedBoxOwnerName);
-        newBox.DestinationFloor = destinationFloors.FirstOrDefault(df => df.Name == selectedDestinationFloor);
 
         newBox.MoveId = 1;
         var newid = await MovingboxService.SaveMovingboxAsync(newBox);
@@ -126,7 +141,7 @@ else
         if (newid > 0)
             NavigationManager.NavigateTo("/boxes/added/" + newid);
     }
-    protected void ResetValidation()
+    protected void ResetValidation(ChangeEventArgs e)
     {
         editContext = new EditContext(newBox);
     }
