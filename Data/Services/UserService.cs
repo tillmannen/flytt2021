@@ -37,9 +37,9 @@ namespace flytt2021.Data.Services
         {
             get
             {
-                int.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("moveid").Value, out int moveid);
-
-                return moveid;
+                if(int.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("moveid").Value, out int moveid))
+                    return moveid;
+                return 0;
             }
 
         }
