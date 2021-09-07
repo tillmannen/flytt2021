@@ -25,23 +25,23 @@ namespace flytt2021.Data.Services
             return _context.Users.ToList();
         }
 
-        public FlyttUser CurrentUser
-        {
-            get
-            {
-                return _context.Users.FirstOrDefault(u => u.Email == _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value);
-            }
-        }
+        //public FlyttUser CurrentUser
+        //{
+        //    get
+        //    {
+        //        return _context.Users.FirstOrDefault(u => u.Email == _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value);
+        //    }
+        //}
 
-        public int CurrentUserMoveId
-        {
-            get
-            {
-                if(int.TryParse(_httpContextAccessor.HttpContext.User?.FindFirst("moveid").Value, out int moveid))
-                    return moveid;
-                return 0;
-            }
+        //public int CurrentUserMoveId
+        //{
+        //    get
+        //    {
+        //        if(int.TryParse(_httpContextAccessor.HttpContext.User?.FindFirst("moveid").Value, out int moveid))
+        //            return moveid;
+        //        return 0;
+        //    }
 
-        }
+        //}
     }
 }

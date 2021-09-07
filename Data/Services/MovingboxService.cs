@@ -25,7 +25,7 @@ namespace flytt2021.Data.Services
         }
         public async Task<IEnumerable<Movingbox>> GetMovingboxesAsync()
         {
-            return await _dbContext.Movingboxes.Where(mb => mb.MoveId == _userService.CurrentUserMoveId)
+            return await _dbContext.Movingboxes//.Where(mb => mb.MoveId == _userService.CurrentUserMoveId)
                 .Include(mb => mb.DestinationFloor)
                 .Include(mb => mb.Packer)
                 .Include(mb => mb.BoxOwner)
