@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using flytt2021.Areas.Identity;
 using flytt2021.Data.Database;
 using flytt2021.Data.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace flytt2021
 {
@@ -26,20 +27,24 @@ namespace flytt2021
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlite(
+                options.UseSqlServer(
                     Configuration.GetConnectionString("IdentityConnection")));
             services.AddDbContext<FlyttDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddDefaultIdentity<FlyttUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddTransient<MovingboxService>();
             services.AddTransient<UserService>();
+            services.AddScoped<IUserClaimsPrincipalFactory<FlyttUser>, AdditionalUserClaimsPrincipalFactory>();
+            services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<FlyttUser>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,7 @@
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@using flytt2021.Data.Database
+@inject SignInManager<FlyttUser> SignInManager
+@inject UserManager<FlyttUser> UserManager
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <ul class="navbar-nav">
