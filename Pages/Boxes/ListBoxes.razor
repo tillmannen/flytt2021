@@ -4,7 +4,7 @@
 
 @using flytt2021.Data.Services
 @using flytt2021.Data.Entities
-@using Microsoft.AspNetCore.Identity;
+@using flytt2021.Data.Database
 
 @inject MovingboxService MovingboxService
 @inject UserService UserService
@@ -35,22 +35,7 @@ else
                     <td>@box.Marking</td>
                     <td>@box.Contents</td>
                     <td>@box.Destination</td>
-                    @switch (@box.DestinationFloorEnum)
-                    {
-                        case FloorEnum.Upper:
-                            <td>Övervåning</td>
-                            break;
-                        case FloorEnum.Middle:
-                            <td>Mellanplan</td>
-                            break;
-                        case FloorEnum.Basement:
-                            <td>Källare</td>
-                            break;
-                        default:
-                            <td>Oklart</td>
-                            break;
-                    }
-
+                    <td>@box.DestinationFloor?.Name</td>
                 </tr>
             }
         </tbody>
@@ -58,12 +43,14 @@ else
 }
 
 @code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
     private IEnumerable<Movingbox> movingboxes;
-    private IEnumerable<IdentityUser> users;
+    private IEnumerable<FlyttUser> users;
 
     protected override async Task OnInitializedAsync()
     {
-        movingboxes = await MovingboxService.GetMovingboxesAsync();
-        users = UserService.GetAllUsers();
+        var user = (await AuthStat).User;
+        movingboxes = await MovingboxService.GetMovingboxesAsync(user.Identity.Name);
     }
 }

@@ -22,7 +22,7 @@ namespace flytt2021.Areas.Identity
 
 			var claims = new List<Claim>();
 
-			claims.Add(new Claim("moveid", user.MoveId.ToString())); ;
+			claims.Add(new Claim("moveid", user.MoveId.ToString()));
 			
 			identity.AddClaims(claims);
 			return principal;

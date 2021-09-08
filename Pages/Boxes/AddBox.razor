@@ -7,6 +7,7 @@
 @using flytt2021.Pages.Boxes.Components
 
 @inject MovingboxService MovingboxService
+@inject UserService UserService
 @inject NavigationManager NavigationManager
 
 <h1>Flyttkartong</h1>
@@ -17,7 +18,7 @@
 }
 else
 {
-    <EditForm EditContext="editContext" OnValidSubmit="SaveBox">  
+    <EditForm EditContext="editContext" OnValidSubmit="SaveBox">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -104,14 +105,21 @@ else
     protected override async Task OnInitializedAsync()
     {
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
-        if (Id != null)
-        {
-            newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
-        }
         packers = MovingboxService.GetPackers();
         boxOwners = MovingboxService.GetBoxOwners();
         destinationFloors = MovingboxService.GetDestinationFloors();
+        var userName = UserService.CurrentUserName ?? "";
 
+if (Id != null)
+        {
+            newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
+        }
+        else
+        {
+            newBox.DestinationFloorId = destinationFloors.FirstOrDefault().DestinationFloorId;
+            newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower())).Id;
+            newBox.BoxOwnerId = boxOwners.FirstOrDefault().Id;
+        }
         editContext = new EditContext(newBox);
     }
 
