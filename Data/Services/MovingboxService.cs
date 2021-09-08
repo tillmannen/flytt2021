@@ -23,10 +23,6 @@ namespace flytt2021.Data.Services
         }
         public async Task<IEnumerable<Movingbox>> GetMovingboxesAsync(string userName = null)
         {
-            if(userName == null)
-            {
-                userName = _userService.CurrentUserName;
-            }
             if(userName != null)
             {
                 var user = _userService.GetUser(userName);

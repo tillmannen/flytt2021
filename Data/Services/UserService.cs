@@ -29,21 +29,5 @@ namespace flytt2021.Data.Services
         {
             return _context.Users.FirstOrDefault(u => u.UserName == userName);
         }
-        public string CurrentUserName
-        {
-            get
-            {
-                try
-                {
-                    return _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
-                }
-                catch
-                {
-                    return "";
-                }
-                
-            }
-        }
-
     }
 }

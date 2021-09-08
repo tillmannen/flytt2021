@@ -94,6 +94,8 @@ else
     [Parameter]
     public int? Id { get; set; }
 
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
     private IEnumerable<Movingbox> existingMovingboxes;
     private IEnumerable<BoxOwner> boxOwners;
     private IEnumerable<Packer> packers;
@@ -104,13 +106,15 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var user = (await AuthStat).User;
+
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
         packers = MovingboxService.GetPackers();
         boxOwners = MovingboxService.GetBoxOwners();
         destinationFloors = MovingboxService.GetDestinationFloors();
-        var userName = UserService.CurrentUserName ?? "";
+        var userName = user.Identity.Name;
 
-if (Id != null)
+        if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
         }
