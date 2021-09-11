@@ -17,6 +17,10 @@
 }
 else
 {
+    <div>
+        <input class="form-control form-control-lg" @bind-value="SearchText" 
+               @bind-value:event="oninput" placeholder="Sök i lådorna" />
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -28,7 +32,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var box in movingboxes)
+            @foreach (var box in filteredMovingboxes)
             {
                 <tr>
                     <td><a href="/boxes/add/@box.MovingboxId">@box.MovingboxId</a></td>
@@ -45,12 +49,16 @@ else
 @code {
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
+    public string SearchText = "";
+
     private IEnumerable<Movingbox> movingboxes;
-    private IEnumerable<FlyttUser> users;
+    private IEnumerable<Movingbox> filteredMovingboxes => movingboxes.Where(mb => mb.Contents.Contains(SearchText));
+    
 
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthStat).User;
         movingboxes = await MovingboxService.GetMovingboxesAsync(user.Identity.Name);
     }
+
 }
