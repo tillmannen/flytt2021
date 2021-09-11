@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @inject NavigationManager NavigationManager
 
 <AuthorizeView>
@@ -7,21 +7,25 @@
             <p>
                 Hello, @context.User.Identity.Name!<br />
                 <br />
-                <br />
-                <a href="/boxes/list" class="btn btn-primary">Visa l&aring;dor</a>
-                <br />
-                <br />
-                <a href="/boxes/add" class="btn btn-primary">Ny l&aring;da</a>
-                <br />
-                <br />
-                <a href="/boxowners/add" class="btn btn-primary">Ny l&aring;d&auml;gare</a>
-                <br />
-                <br />
-                <a href="/packers/add" class="btn btn-primary">Ny packare</a>
-                <br />
-                <br />
-                <br />
-                <br />
+                <div class="list-group">
+                    <a href="boxes/add" class="list-group-item list-group-item-action">
+                        <h4 class="list-group-item-heading">Ny flyttkartong</h4>
+                        <p class="list-group-item-text">L&auml;gg till en ny kartong.</p>
+                    </a>
+                    <a href="/boxes/list" class="list-group-item list-group-item-action">
+                        <h4 class="list-group-item-heading">Visa flyttkartonger</h4>
+                        <p class="list-group-item-text">Visa eller s&ouml;k bland redan packade l&aring;dor.</p>
+                    </a>
+                    <a href="/boxowners/add" class="list-group-item list-group-item-action">
+                        <h4 class="list-group-item-heading">Ny l&aring;d&auml;gare</h4>
+                        <p class="list-group-item-text">L&auml;gg till en ny l&aring;d&auml;gare.</p>
+                    </a>
+                    <a href="/boxes/list" class="list-group-item list-group-item-action">
+                        <h4 class="list-group-item-heading">Ny packare</h4>
+                        <p class="list-group-item-text">L&auml;gg till en ny packare.</p>
+                    </a>
+                </div>
+ 
             </p>
 
             <form method="post" action="Identity/Account/LogOut">
