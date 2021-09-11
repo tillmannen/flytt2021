@@ -52,7 +52,7 @@ else
     public string SearchText = "";
 
     private IEnumerable<Movingbox> movingboxes;
-    private IEnumerable<Movingbox> filteredMovingboxes => movingboxes.Where(mb => mb.Contents.Contains(SearchText));
+    private IEnumerable<Movingbox> filteredMovingboxes => movingboxes.Where(mb => mb.Contents.ToLower().Contains(SearchText.ToLower()));
     
 
     protected override async Task OnInitializedAsync()
