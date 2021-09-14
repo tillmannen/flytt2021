@@ -7,6 +7,7 @@
 @using flytt2021.Pages.Boxes.Components
 
 @inject MovingboxService MovingboxService
+@inject MoveService MoveService
 @inject UserService UserService
 @inject NavigationManager NavigationManager
 
@@ -37,42 +38,52 @@ else
                     <input form="Destination" class="form-control" @bind="@newBox.Destination" />
                 </div>
 
-                <div class="mb-3">
-                    <label for="floor" class="control-label">Våning</label>
-                    <select form="floor" @bind="@newBox.DestinationFloorId" class="form-control">
-                        @if (destinationFloors != null)
-                        {
-                            @foreach (var floor in destinationFloors)
+                @if (destinationFloors.Any())
+                {
+                    <div class="mb-3">
+                        <label for="floor" class="control-label">Våning</label>
+                        <select form="floor" @bind="@newBox.DestinationFloorId" class="form-control">
+                            @if (destinationFloors != null)
                             {
-                                <option value="@floor.DestinationFloorId">@floor.Name</option>
+                                @foreach (var floor in destinationFloors)
+                                {
+                                    <option value="@floor.DestinationFloorId">@floor.Name</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="floor" class="control-label">Ägare av lådan</label>
-                    <select form="floor" @bind="@newBox.BoxOwnerId" class="form-control">
-                        @if (boxOwners != null)
-                        {
-                            @foreach (var owner in boxOwners)
+                        </select>
+                    </div>
+                }
+                @if (boxOwners.Any())
+                {
+                    <div class="mb-3">
+                        <label for="floor" class="control-label">Ägare av lådan</label>
+                        <select form="floor" @bind="@newBox.BoxOwnerId" class="form-control">
+                            @if (boxOwners != null)
                             {
-                                <option value="@owner.Id">@owner.Name</option>
+                                @foreach (var owner in boxOwners)
+                                {
+                                    <option value="@owner.Id">@owner.Name</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="floor" class="control-label">Packare</label>
-                    <select form="floor" @bind="@newBox.PackerId" class="form-control">
-                        @if (packers != null)
-                        {
-                            @foreach (var packer in packers)
+                        </select>
+                    </div>
+                }
+                @if (packers.Any())
+                {
+                    <div class="mb-3">
+                        <label for="floor" class="control-label">Packare</label>
+                        <select form="floor" @bind="@newBox.PackerId" class="form-control">
+                            @if (packers != null)
                             {
-                                <option value="@packer.Id">@packer.Name</option>
+                                @foreach (var packer in packers)
+                                {
+                                    <option value="@packer.Id">@packer.Name</option>
+                                }
                             }
-                        }
-                    </select>
-                </div>
+                        </select>
+                    </div>
+                }
+
                 <button type="submit" class="btn btn-primary">Spara</button>
                 <button type="button" class="btn btn-primary" @onclick="@Cancel">Rensa formuläret</button>
             </div>
@@ -101,11 +112,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
 
-        existingMovingboxes = await MovingboxService.GetMovingboxesAsync();
-        packers = MovingboxService.GetPackers();
-        boxOwners = MovingboxService.GetBoxOwners();
-        destinationFloors = MovingboxService.GetDestinationFloors();
+        existingMovingboxes = await MovingboxService.GetMovingboxesAsync(userid);
+        packers = MoveService.GetPackers(userid);
+        boxOwners = MoveService.GetBoxOwners(userid);
+        destinationFloors = MoveService.GetDestinationFloors(userid);
         var userName = user.Identity.Name;
 
         if (Id != null)
@@ -114,9 +126,9 @@ else
         }
         else
         {
-            newBox.DestinationFloorId = destinationFloors.FirstOrDefault().DestinationFloorId;
-            newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower())).Id;
-            newBox.BoxOwnerId = boxOwners.FirstOrDefault().Id;
+            newBox.DestinationFloorId = destinationFloors.FirstOrDefault()?.DestinationFloorId;
+            newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower()))?.Id;
+            newBox.BoxOwnerId = boxOwners.FirstOrDefault()?.Id;
         }
         editContext = new EditContext(newBox);
     }

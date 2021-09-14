@@ -1,0 +1,84 @@
+﻿@page "/move/destinationfloors/add"
+@attribute [Authorize]
+
+@using flytt2021.Data.Entities
+@using flytt2021.Data.Services
+@using flytt2021.Data.Database
+
+@inject UserService UserService
+@inject MoveService MoveService
+@inject NavigationManager NavigationManager
+
+<h3>Lägg till våningar</h3>
+
+@if (move == null)
+{
+    <span>Loading...</span>
+}
+else
+{
+    <p>
+        Om det finns fler än en våning dit du ska flytta kan du också lägga till våningar så att du kan välja vilken våning som dina flyttlådor ska till.
+        Det gör det enklare att sortera och hitta dina kartonger när du kommit fram. Du kan också välja att färgkoda dina våningar. Om du gör det så kan du
+        sätta en liten klisterlapp med rätt färg på lådan för att göra det enkelt för dig att se vilken våning som lådan ska till.
+    </p>
+    @if (move.DestinationFloors?.Count() > 0)
+    {
+        <h4>Dina nuvarande våningar:</h4>
+        <ul>
+            @foreach (var floor in move.DestinationFloors)
+            {
+                <li>@floor.Name</li>
+            }
+        </ul>
+    }
+
+    <EditForm Model="@newFloor" OnValidSubmit="@SaveNewFloor">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-floating mb-3">
+            <InputText id="lastName" class="form-control" @bind-Value="@newFloor.Name" placeholder="Enter last name"></InputText>
+            <label for="lastName">Namn:</label>
+            <ValidationMessage For="@(() => newFloor.Name)" />
+        </div>
+        <button type="submit" class="btn btn-primary">Lägg till våning</button>
+    </EditForm>
+    <button class="btn btn-secondary" @onclick="Next">Nästa</button>
+}
+
+@code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+
+    private Move move;
+    private DestinationFloor newFloor;
+
+    private FlyttUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        currentUser = UserService.GetUser(userid);
+
+        if (!currentUser.MoveId.HasValue)
+        {
+            NavigationManager.NavigateTo("/move/add");
+        }
+
+        newFloor = new DestinationFloor() { MoveId = currentUser.MoveId.Value };
+        move = MoveService.GetMove(currentUser.MoveId.Value);
+    }
+
+    private async void SaveNewFloor()
+    {
+        var floor = await MoveService.AddDestinationFloorAsync(newFloor);
+        move.DestinationFloors.Add(floor);
+    }
+
+    private void Next()
+    {
+        NavigationManager.NavigateTo("/move/packers/add");
+    }
+}

@@ -3,9 +3,11 @@
 
 @using flytt2021.Data.Services
 @using flytt2021.Data.Entities
+@using flytt2021.Data.Database
 
 @inject NavigationManager NavigationManager
-@inject MovingboxService service
+@inject MoveService service
+@inject UserService UserService
 
 <h3>AddBoxOwner</h3>
 
@@ -28,7 +30,19 @@
 </EditForm>
 
 @code {
+
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
     private BoxOwner boxOwner = new BoxOwner();
+    private FlyttUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        currentUser = UserService.GetUser(userid);
+    }
 
     private async void SaveBoxOwner()
     {

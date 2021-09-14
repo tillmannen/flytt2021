@@ -41,8 +41,11 @@ namespace flytt2021
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddTransient<MoveService>();
             services.AddTransient<MovingboxService>();
             services.AddTransient<UserService>();
+
             services.AddScoped<IUserClaimsPrincipalFactory<FlyttUser>, AdditionalUserClaimsPrincipalFactory>();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<FlyttUser>>();
         }

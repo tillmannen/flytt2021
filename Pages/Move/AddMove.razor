@@ -1,0 +1,94 @@
+﻿@page "/move/add"
+@attribute [Authorize]
+
+@using flytt2021.Data.Entities
+@using flytt2021.Data.Services
+@using flytt2021.Data.Database
+
+@inject MoveService MoveService
+@inject UserService UserService
+
+@inject NavigationManager NavigationManager
+
+<h3>Ny flytt</h3>
+
+<p>
+    Här kan du editera inställningarna för din flytt och ställa in varifrån och vart du ska flytta.
+    Du kan också lägga till våningar, packare och lådägare. Mer om det nedan.
+</p>
+<EditForm EditContext="editContext" OnValidSubmit="SaveMove">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-auto">
+            <h4>Generella inställningar</h4>
+            <div class="mb-3 form-floating">
+                <input type="text" id="FromFriendlyName" class="form-control" @bind="@newMove.FromFriendlyName" />
+                <label for="FromFriendlyName">Flyttar från</label>
+            </div>
+            <div class="mb-3 form-floating">
+                <input type="text" id="ToFriendlyName" class="form-control" @bind="@newMove.ToFriendlyName" />
+                <label for="ToFriendlyName">Flyttar till</label>
+            </div>
+            <div class="mb-3 form-floating">
+                <input type="date" id="MoveDate" class="form-control" @bind="@newMove.MoveDate" />
+                <label for="MoveDate" class="control-label">Flyttdatum</label>
+            </div>
+            <div class="mb-3 form-floating">
+                <input type="number" id="FromArea" class="form-control" @bind="@newMove.FromArea" />
+                <label for="FromArea" class="control-label">Bostadsyta du flyttar från</label>
+                <div class="form-text">
+                    Valfritt att fylla i men om du gör det så kan vi räkna ut ungefär hur många flyttkartonger du troligen behöver packa och visa dig
+                    en förloppsindikator på ungefär hur du ligger till.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Nästa</button>
+        </div>
+    </div>
+</EditForm>
+
+
+
+
+
+@code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    EditContext editContext;
+    Move newMove;
+    bool AddDestinationFloorPopupVisible = false;
+    FlyttUser currentUser;
+
+    DestinationFloor newFloor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        var user = (await AuthStat).User;
+
+        newMove = new Move();
+        newMove.CreatedDateTime = DateTime.Now;
+        newMove.MoveDate = DateTime.Now;
+        newMove.CreatedByUserName = user.Identity.Name;
+
+        currentUser = UserService.GetUser(user.Identity.Name);
+
+        editContext = new EditContext(newMove);
+    }
+
+
+    private async void SaveNewFloor()
+    {
+        var savedFloor = await MoveService.AddDestinationFloorAsync(newFloor);
+    }
+
+    private async void SaveMove()
+    {
+        var savedMove = await MoveService.SaveMoveAsync(newMove, currentUser);
+        currentUser.MoveId = savedMove.MoveId;
+        await UserService.UpdateUserAsync(currentUser);
+
+        NavigationManager.NavigateTo("/move/destinationfloors/add");
+    }
+}

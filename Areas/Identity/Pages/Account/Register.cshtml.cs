@@ -75,7 +75,7 @@ namespace flytt2021.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new FlyttUser { UserName = Input.Email, Email = Input.Email, MoveId = 1 };
+                var user = new FlyttUser { UserName = Input.Email, Email = Input.Email };
                 if (!user.UserName.Contains("tillman") && !user.UserName.Contains("jurdell") && !user.UserName.Contains("skager"))
                     return Page();
 

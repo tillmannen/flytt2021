@@ -29,5 +29,12 @@ namespace flytt2021.Data.Services
         {
             return _context.Users.FirstOrDefault(u => u.UserName == userName);
         }
+
+        public async Task UpdateUserAsync(FlyttUser user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

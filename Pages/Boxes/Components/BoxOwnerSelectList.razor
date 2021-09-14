@@ -2,7 +2,7 @@
 @using flytt2021.Data.Services
 @using flytt2021.Data.Entities
 
-@inject MovingboxService MovingboxService
+@inject MoveService MoveService
 @attribute [Authorize]
 
 @if (boxOwners == null)
@@ -33,12 +33,19 @@ StringComparison.OrdinalIgnoreCase))
 
 
 @code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+    //private FlyttUser currentUser;
+
     private string item { get; set; }
     private IEnumerable<BoxOwner> boxOwners;
 
     protected override async Task OnInitializedAsync()
     {
-        boxOwners = MovingboxService.GetBoxOwners();
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+        //currentUser = UserService.GetUser(userid);
+
+        boxOwners = MoveService.GetBoxOwners(userid);
     }
 
     [Parameter]
