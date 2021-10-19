@@ -84,22 +84,20 @@ else
                     </div>
                 }
 
-            <div class="mb-3">
-                <input type="checkbox" form="Prioritized" class="form-check-input" @bind="@newBox.PrioritizedUnpacking" />
-                <label for="Prioritized" class="form-check-label">
-                    Packas upp först
-                </label>
-            </div>
+                <div class="mb-3">
+                    <input type="checkbox" form="Prioritized" class="form-check-input" @bind="@newBox.PrioritizedUnpacking" />
+                    <label for="Prioritized" class="form-check-label">
+                        Packas upp först
+                    </label>
+                </div>
 
                 <button type="submit" class="btn btn-primary">Spara</button>
                 <button type="button" class="btn btn-primary" @onclick="@Cancel">Rensa formuläret</button>
             </div>
         </div>
-
-
-
     </EditForm>
-
+    <br />
+    <br />
 }
 
 @code {
