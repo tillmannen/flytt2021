@@ -1,0 +1,86 @@
+﻿@page "/settings"
+@using flytt2021.Data.Services
+@using flytt2021.Data.Database
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+
+<AuthorizeView>
+    <Authorized>
+        @if (FlyttUser == null)
+        {
+        <span>Loading...</span>
+        }
+        else
+        {
+        <div class="text-center">
+            <p>
+                Hej, @FlyttUser.UserName!<br />
+                <br />
+                <div class="list-group">
+                    <a href="/move/add" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-home"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">&Auml;ndra flytt</h4>
+                            <p class="list-group-item-text">Uppdatera inst&auml;llningarna f&ouml;r din flytt.</p>
+                        </div>
+                    </a>
+                    <a href="/destinationfloors/add" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-briefcase"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">Ny v&aring;ning</h4>
+                            <p class="list-group-item-text">L&auml;gg till en ny v&aring;ning.</p>
+                        </div>
+                    </a>
+                    <a href="/boxowners/add" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-briefcase"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">Ny l&aring;d&auml;gare</h4>
+                            <p class="list-group-item-text">L&auml;gg till en ny l&aring;d&auml;gare.</p>
+                        </div>
+                    </a>
+                    <a href="/packers/add" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-person"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">Ny packare</h4>
+                            <p class="list-group-item-text">L&auml;gg till en ny packare.</p>
+                        </div>
+                    </a>
+                    <a href="/" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-arrow-circle-left"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">Tillbaka</h4>
+                            <p class="list-group-item-text">Tillbaka till huvudmenyn.</p>
+                        </div>
+                    </a>
+                </div>
+            </p>
+
+            <form method="post" action="Identity/Account/LogOut">
+                <button type="submit" class="btn btn-primary">Log out</button>
+            </form>
+        </div>
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <a href="Identity/Account/Login" class="btn btn-primary">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    public FlyttUser FlyttUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        var user = (await AuthStat).User;
+        if (!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("Identity/Account/Login");
+        }
+        FlyttUser = UserService.GetUser(user.Identity.Name);
+    }
+}

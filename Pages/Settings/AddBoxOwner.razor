@@ -1,0 +1,105 @@
+﻿@page "/boxowners/add"
+@page "/boxowners/add/{IsGuide:int}"
+
+@attribute [Authorize]
+
+@using flytt2021.Data.Services
+@using flytt2021.Data.Entities
+@using flytt2021.Data.Database
+
+@inject NavigationManager NavigationManager
+@inject MoveService MoveService
+@inject UserService UserService
+
+<h3>Ny lådägare</h3>
+
+<p>
+    Ibland är det flera som äger de lådor ni packar i. Kanske lånar ni några av en granne eller av flyttfirman. Och kanske är några era egna.
+    Om du anger vilka som äger lådorna vid din flytt så kan du märka varje låda med det i systemet för att enkelt kunna se det sedan när du packar upp.
+    @if (move.BoxOwners?.Count() < 1)
+    {
+        <span>Om du inte vet alla lådägare ännu så kan du enkelt lägga till flera efteråt.</span>
+    }
+
+</p>
+@if (move.BoxOwners?.Count() > 0)
+{
+    <h4>Dina nuvarande lådägare:</h4>
+    <ul>
+        @foreach (var owner in move.BoxOwners)
+        {
+            <li>@owner.Name</li>
+        }
+    </ul>
+}
+
+<EditForm Model=" boxOwner" OnValidSubmit="SaveBoxOwner">
+    <div class="form-floating mb-3">
+        <InputText id="name" class="form-control" @bind-Value="@boxOwner.Name" placeholder="Namn"></InputText>
+        <label for="name">Namn:</label>
+        <ValidationMessage For="@(() => boxOwner.Name)" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Spara" />
+    </div>
+</EditForm>
+
+@if (IsGuide > 0)
+{
+    <div class="btn-group">
+        <button class="btn btn-secondary" @onclick="Prev">Tillbaka</button>
+        <button class="btn btn-success" @onclick="Done">Klar</button>
+    </div>
+}
+else
+{
+
+    <button class="btn btn-success" @onclick="Done">Klar</button>
+}
+@code {
+
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    [Parameter]
+    public int IsGuide { get; set; } = 0;
+
+    private BoxOwner boxOwner;
+    private Move move;
+
+    private FlyttUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        currentUser = UserService.GetUser(userid);
+
+        if (!currentUser.MoveId.HasValue)
+        {
+            NavigationManager.NavigateTo("/move/add");
+        }
+
+        boxOwner = new BoxOwner() { MoveId = currentUser.MoveId.Value };
+        move = MoveService.GetMove(currentUser.MoveId.Value);
+    }
+
+    private async void SaveBoxOwner()
+    {
+        var owner = await MoveService.AddBoxOwnerAsync(boxOwner);
+        if (owner != null)
+            move.BoxOwners.Add(owner);
+
+        boxOwner = new BoxOwner() { MoveId = currentUser.MoveId.Value };
+    }
+
+    private void Prev()
+    {
+        NavigationManager.NavigateTo("/packers/add/1");
+    }
+    private void Done()
+    {
+        NavigationManager.NavigateTo("/settings");
+    }
+}

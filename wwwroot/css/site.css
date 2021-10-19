@@ -78,3 +78,13 @@ a, .btn-link {
 .new-box-button {
     padding-top: 20px;
 }
+.menu-icon {
+    display: inline-block;
+    font-size: 36px;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+.menu-item {
+    display: inline-block;
+    vertical-align: middle;
+}

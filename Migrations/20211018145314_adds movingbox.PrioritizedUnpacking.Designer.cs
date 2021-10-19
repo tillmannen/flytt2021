@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flytt2021.Data.Database;
 
 namespace flytt2021.Migrations
 {
     [DbContext(typeof(FlyttDbContext))]
-    partial class FlyttDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211018145314_adds movingbox.PrioritizedUnpacking")]
+    partial class addsmovingboxPrioritizedUnpacking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +28,7 @@ namespace flytt2021.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("MoveId")
+                    b.Property<int?>("MoveId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -130,9 +132,6 @@ namespace flytt2021.Migrations
                     b.Property<int?>("PackerId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("PrioritizedUnpacking")
-                        .HasColumnType("bit");
-
                     b.HasKey("MovingboxId");
 
                     b.HasIndex("BoxOwnerId");
@@ -153,7 +152,7 @@ namespace flytt2021.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("MoveId")
+                    b.Property<int?>("MoveId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -168,13 +167,9 @@ namespace flytt2021.Migrations
 
             modelBuilder.Entity("flytt2021.Data.Entities.BoxOwner", b =>
                 {
-                    b.HasOne("flytt2021.Data.Entities.Move", "Move")
+                    b.HasOne("flytt2021.Data.Entities.Move", null)
                         .WithMany("BoxOwners")
-                        .HasForeignKey("MoveId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Move");
+                        .HasForeignKey("MoveId");
                 });
 
             modelBuilder.Entity("flytt2021.Data.Entities.DestinationFloor", b =>
@@ -219,13 +214,9 @@ namespace flytt2021.Migrations
 
             modelBuilder.Entity("flytt2021.Data.Entities.Packer", b =>
                 {
-                    b.HasOne("flytt2021.Data.Entities.Move", "Move")
+                    b.HasOne("flytt2021.Data.Entities.Move", null)
                         .WithMany("Packers")
-                        .HasForeignKey("MoveId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Move");
+                        .HasForeignKey("MoveId");
                 });
 
             modelBuilder.Entity("flytt2021.Data.Entities.Move", b =>

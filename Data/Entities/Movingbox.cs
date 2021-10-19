@@ -14,6 +14,8 @@ namespace flytt2021.Data.Entities
         public FloorEnum DestinationFloorEnum { get; set; }
         public string Destination { get; set; }
         public bool IsUnpacked { get; set; } = false;
+        [Display(Name = "Packa upp tidigt")]
+        public bool PrioritizedUnpacking { get; set; } = false;
 
         public int? DestinationFloorId { get; set; }
         public DestinationFloor? DestinationFloor { get; set; }

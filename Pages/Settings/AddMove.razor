@@ -53,6 +53,7 @@
 
 
 @code {
+
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
     EditContext editContext;
@@ -67,12 +68,19 @@
         base.OnInitialized();
         var user = (await AuthStat).User;
 
-        newMove = new Move();
-        newMove.CreatedDateTime = DateTime.Now;
-        newMove.MoveDate = DateTime.Now;
-        newMove.CreatedByUserName = user.Identity.Name;
-
         currentUser = UserService.GetUser(user.Identity.Name);
+
+        if (currentUser.MoveId != null)
+        {
+            newMove = MoveService.GetMove(currentUser.MoveId.Value);
+        }
+        else
+        {
+            newMove = new Move();
+            newMove.CreatedDateTime = DateTime.Now;
+            newMove.MoveDate = DateTime.Now;
+            newMove.CreatedByUserName = user.Identity.Name;
+        }
 
         editContext = new EditContext(newMove);
     }
@@ -86,9 +94,13 @@
     private async void SaveMove()
     {
         var savedMove = await MoveService.SaveMoveAsync(newMove, currentUser);
-        currentUser.MoveId = savedMove.MoveId;
-        await UserService.UpdateUserAsync(currentUser);
+        if(currentUser.MoveId == null)
+        {
+            currentUser.MoveId = savedMove.MoveId;
+            await UserService.UpdateUserAsync(currentUser);
+        }
 
-        NavigationManager.NavigateTo("/move/destinationfloors/add");
+
+        NavigationManager.NavigateTo("/destinationfloors/add/1");
     }
 }

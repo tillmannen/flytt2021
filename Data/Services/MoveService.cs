@@ -1,5 +1,7 @@
 ﻿using flytt2021.Data.Database;
 using flytt2021.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +23,19 @@ namespace flytt2021.Data.Services
 
         public async Task<Move> SaveMoveAsync(Move move, FlyttUser owner)
         {
+            EntityEntry<Move> newMove;
             if(move.MoveId != 0)
             {
                 var dbMove = _dbContext.Moves.FirstOrDefault(m => m.MoveId == move.MoveId);
                 if (dbMove.CreatedByUserName != owner.Id)
                     return null;
+                newMove = _dbContext.Moves.Update(move);
             }
-            move.CreatedByUserName = owner.Id;
-            var newMove = _dbContext.Moves.Add(move);
+            else 
+            {
+                move.CreatedByUserName = owner.Email;
+                newMove = _dbContext.Moves.Add(move);
+            }
             await _dbContext.SaveChangesAsync();
 
             return newMove.Entity;
@@ -36,7 +43,12 @@ namespace flytt2021.Data.Services
 
         public Move GetMove(int moveid)
         {
-            return _dbContext.Moves.FirstOrDefault(m => m.MoveId == moveid);
+            var move = _dbContext.Moves
+                .Include(df => df.DestinationFloors)
+                .Include(df => df.Packers)
+                .Include(df => df.BoxOwners)
+                .FirstOrDefault(m => m.MoveId == moveid);
+            return move;
         }
 
 
@@ -45,13 +57,17 @@ namespace flytt2021.Data.Services
             var currentUser = _userService.GetUser(userId);
             return _dbContext.BoxOwners/*.Where(bo => bo.MoveId == currentUser.MoveId)*/.ToList();
         }
-        public async Task AddBoxOwnerAsync(BoxOwner boxOwner)
+        public async Task<BoxOwner> AddBoxOwnerAsync(BoxOwner boxOwner)
         {
-            if (!_dbContext.BoxOwners.Any(bo => bo.Name == boxOwner.Name))
+            if (!_dbContext.BoxOwners.Any(bo => bo.MoveId == boxOwner.MoveId && bo.Name == boxOwner.Name) && !string.IsNullOrEmpty(boxOwner.Name))
             {
-                await _dbContext.BoxOwners.AddAsync(boxOwner);
+                var owner = await _dbContext.BoxOwners.AddAsync(boxOwner);
                 await _dbContext.SaveChangesAsync();
+
+                return owner.Entity;
             }
+
+            return null;
         }
 
         public IEnumerable<Packer> GetPackers(string userId)
@@ -59,22 +75,26 @@ namespace flytt2021.Data.Services
             var currentUser = _userService.GetUser(userId);
             return _dbContext.Packers/*.Where(mb => mb.MoveId == currentUser.MoveId)*/.ToList();
         }
-        public async Task AddPackerAsync(Packer packer)
+        public async Task<Packer> AddPackerAsync(Packer packer)
         {
-            if (!_dbContext.Packers.Any(bo => bo.Name == packer.Name))
+            if (!_dbContext.Packers.Any(p => p.MoveId == packer.MoveId && p.Name == packer.Name) && !string.IsNullOrEmpty(packer.Name))
             {
-                await _dbContext.Packers.AddAsync(packer);
+                var addedPacker = await _dbContext.Packers.AddAsync(packer);
                 await _dbContext.SaveChangesAsync();
+
+                return addedPacker.Entity;
             }
+            return null;
         }
         public IQueryable<DestinationFloor> GetDestinationFloors(string userId)
         {
             var currentUser = _userService.GetUser(userId);
-            return _dbContext.DestinationFloors.Where(mb => mb.MoveId == currentUser.MoveId);
+            var destinationFloors = _dbContext.DestinationFloors.Where(mb => mb.MoveId == currentUser.MoveId);
+            return destinationFloors;
         }
         public async Task<DestinationFloor> AddDestinationFloorAsync(DestinationFloor floor)
         {
-            if (!_dbContext.DestinationFloors.Any(bo => bo.Name == floor.Name))
+            if (!_dbContext.DestinationFloors.Any(df => df.MoveId == floor.MoveId && df.Name == floor.Name) && !string.IsNullOrEmpty(floor.Name))
             {
                 var addedFloor = await _dbContext.DestinationFloors.AddAsync(floor);
                 await _dbContext.SaveChangesAsync();

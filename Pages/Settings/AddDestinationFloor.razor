@@ -1,4 +1,5 @@
-﻿@page "/move/destinationfloors/add"
+﻿@page "/destinationfloors/add"
+@page "/destinationfloors/add/{IsGuide:int}"
 @attribute [Authorize]
 
 @using flytt2021.Data.Entities
@@ -37,18 +38,33 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="form-floating mb-3">
-            <InputText id="lastName" class="form-control" @bind-Value="@newFloor.Name" placeholder="Enter last name"></InputText>
-            <label for="lastName">Namn:</label>
+            <InputText id="name" class="form-control" @bind-Value="@newFloor.Name" placeholder="Namn"></InputText>
+            <label for="name">Namn:</label>
             <ValidationMessage For="@(() => newFloor.Name)" />
         </div>
         <button type="submit" class="btn btn-primary">Lägg till våning</button>
     </EditForm>
-    <button class="btn btn-secondary" @onclick="Next">Nästa</button>
+    <br />
+    @if (IsGuide > 0)
+    {
+        <div class="btn-group">
+            <button class="btn btn-secondary" @onclick="Prev">Tillbaka</button>
+            <button class="btn btn-secondary" @onclick="Done">Klar</button>
+            <button class="btn btn-primary" @onclick="Next">Nästa</button>
+        </div>
+    }
+    else
+    {
+
+        <button class="btn btn-success" @onclick="Done">Klar</button>
+    }
 }
 
 @code {
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
+    [Parameter]
+    public int IsGuide { get; set; } = 0;
 
     private Move move;
     private DestinationFloor newFloor;
@@ -69,16 +85,29 @@ else
 
         newFloor = new DestinationFloor() { MoveId = currentUser.MoveId.Value };
         move = MoveService.GetMove(currentUser.MoveId.Value);
+
     }
 
     private async void SaveNewFloor()
     {
         var floor = await MoveService.AddDestinationFloorAsync(newFloor);
-        move.DestinationFloors.Add(floor);
+        if(floor != null)
+            move.DestinationFloors.Add(floor);
+
+        newFloor = new DestinationFloor() { MoveId = currentUser.MoveId.Value };
     }
 
+
+    private void Prev()
+    {
+        NavigationManager.NavigateTo("/move/add");
+    }
+    private void Done()
+    {
+        NavigationManager.NavigateTo("/settings");
+    }
     private void Next()
     {
-        NavigationManager.NavigateTo("/move/packers/add");
+        NavigationManager.NavigateTo("/packers/add/1");
     }
 }

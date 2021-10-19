@@ -14,35 +14,43 @@
         {
             <div class="text-center">
                 <p>
-                    Hello, @FlyttUser.UserName!<br />
+                    Hej, @FlyttUser.UserName!<br />
                     <br />
                     <div class="list-group">
                         @if (FlyttUser.MoveId != null)
                         {
 
                             <a href="boxes/add" class="list-group-item list-group-item-action">
-                                <h4 class="list-group-item-heading">Ny flyttkartong</h4>
-                                <p class="list-group-item-text">L&auml;gg till en ny kartong.</p>
+                                <div class="menu-icon"><span class="oi oi-box"></span></div>
+                                <div class="menu-item">
+                                    <h4 class="list-group-item-heading">Ny flyttkartong</h4>
+                                    <p class="list-group-item-text">L&auml;gg till en ny kartong.</p>
+                                </div>
                             </a>
                             <a href="/boxes/list" class="list-group-item list-group-item-action">
-                                <h4 class="list-group-item-heading">Visa flyttkartonger</h4>
-                                <p class="list-group-item-text">Visa eller s&ouml;k bland redan packade l&aring;dor.</p>
+                                <div class="menu-icon"><span class="oi oi-list"></span></div>
+                                <div class="menu-item">
+                                    <h4 class="list-group-item-heading">Visa flyttkartonger</h4>
+                                    <p class="list-group-item-text">Visa eller s&ouml;k bland redan packade l&aring;dor.</p>
+                                </div>
                             </a>
-                            <a href="/boxowners/add" class="list-group-item list-group-item-action">
-                                <h4 class="list-group-item-heading">Ny l&aring;d&auml;gare</h4>
-                                <p class="list-group-item-text">L&auml;gg till en ny l&aring;d&auml;gare.</p>
-                            </a>
-                            <a href="/boxes/list" class="list-group-item list-group-item-action">
-                                <h4 class="list-group-item-heading">Ny packare</h4>
-                                <p class="list-group-item-text">L&auml;gg till en ny packare.</p>
+                            <a href="/settings" class="list-group-item list-group-item-action">
+                                <div class="menu-icon"><span class="oi oi-cog"></span></div>
+                                <div class="menu-item">
+                                    <h4 class="list-group-item-heading">Inställningar</h4>
+                                    <p class="list-group-item-text">Ändra inställningarna för din flytt.</p>
+                                </div>
                             </a>
                         }
                         else
                         {
-                            <a href="move/add" class="list-group-item list-group-item-action">
-                                <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
-                                <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
-                            </a>
+                    <a href="move/add" class="list-group-item list-group-item-action">
+                        <div class="menu-icon"><span class="oi oi-home"></span></div>
+                        <div class="menu-item">
+                            <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
+                            <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
+                        </div>
+                    </a>
                         }
 
                     </div>
