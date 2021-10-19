@@ -44,9 +44,17 @@ namespace flytt2021.Data.Services
         public Move GetMove(int moveid)
         {
             var move = _dbContext.Moves
+                .FirstOrDefault(m => m.MoveId == moveid);
+            return move;
+        }
+
+        public Move GetFullMove(int moveid)
+        {
+            var move = _dbContext.Moves
                 .Include(df => df.DestinationFloors)
-                .Include(df => df.Packers)
-                .Include(df => df.BoxOwners)
+                .Include(p => p.Packers)
+                .Include(bo => bo.BoxOwners)
+                .Include(mb => mb.MovingBoxes)
                 .FirstOrDefault(m => m.MoveId == moveid);
             return move;
         }
@@ -103,6 +111,18 @@ namespace flytt2021.Data.Services
             }
 
             return null;
+        }
+
+        public MoveProgress GetMoveProgress(string userId = null)
+        {
+            var user = _userService.GetUser(userId);
+
+            var move = GetFullMove(user.MoveId.Value);
+
+            var estCount = move.FromArea.HasValue ? (int)Math.Floor(move.FromArea.Value * 1.5) : 0;
+            var currentCount = move.MovingBoxes.Count();
+
+            return new MoveProgress { EstimatedBoxCount = estCount, PackedBoxes = currentCount };
         }
     }
 }

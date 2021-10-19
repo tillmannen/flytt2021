@@ -81,7 +81,7 @@ else
         }
 
         packer = new Packer() { MoveId = currentUser.MoveId.Value };
-        move = MoveService.GetMove(currentUser.MoveId.Value);
+        move = MoveService.GetFullMove(currentUser.MoveId.Value);
     }
 
     private async void SaveNewPacker()

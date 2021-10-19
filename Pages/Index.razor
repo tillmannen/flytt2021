@@ -1,12 +1,14 @@
 ﻿@page "/"
 @using flytt2021.Data.Services
 @using flytt2021.Data.Database
+@using flytt2021.Data.Entities
 @inject NavigationManager NavigationManager
+@inject MoveService MoveService
 @inject UserService UserService
 
 <AuthorizeView>
     <Authorized>
-        @if (FlyttUser == null)
+        @if (move == null)
         {
             <span>Loading...</span>
         }
@@ -14,10 +16,18 @@
         {
             <div class="text-center">
                 <p>
-                    Hej, @FlyttUser.UserName!<br />
+                    Hej, @flyttUser.UserName!<br />
+                    <br />
+                    <div class="row">
+                        <p>Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.</p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <br />
                     <br />
                     <div class="list-group">
-                        @if (FlyttUser.MoveId != null)
+                        @if (flyttUser.MoveId != null)
                         {
 
                             <a href="boxes/add" class="list-group-item list-group-item-action">
@@ -44,13 +54,13 @@
                         }
                         else
                         {
-                    <a href="move/add" class="list-group-item list-group-item-action">
-                        <div class="menu-icon"><span class="oi oi-home"></span></div>
-                        <div class="menu-item">
-                            <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
-                            <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
-                        </div>
-                    </a>
+                            <a href="move/add" class="list-group-item list-group-item-action">
+                                <div class="menu-icon"><span class="oi oi-home"></span></div>
+                                <div class="menu-item">
+                                    <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
+                                    <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
+                                </div>
+                            </a>
                         }
 
                     </div>
@@ -72,7 +82,10 @@
 @code{
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
-    public FlyttUser FlyttUser;
+    public FlyttUser flyttUser;
+
+    private Move move;
+    private MoveProgress progress;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,7 +95,11 @@
         {
             NavigationManager.NavigateTo("Identity/Account/Login");
         }
-        FlyttUser = UserService.GetUser(user.Identity.Name);
+        flyttUser = UserService.GetUser(user.Identity.Name);
+
+        move = MoveService.GetMove(flyttUser.MoveId.Value);
+
+        progress = MoveService.GetMoveProgress(user.Identity.Name);
     }
 
 }
