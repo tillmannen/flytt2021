@@ -14,18 +14,16 @@
         }
         else
         {
+            <p class="text-center">
+
+                Hej, @flyttUser.UserName!<br />
+                <br />Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.
+            </p>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
             <div class="text-center">
                 <p>
-                    Hej, @flyttUser.UserName!<br />
-                    <br />
-                    <div class="row">
-                        <p>Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.</p>
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                    </div>
-                    <br />
-                    <br />
                     <div class="list-group">
                         @if (flyttUser.MoveId != null)
                         {
