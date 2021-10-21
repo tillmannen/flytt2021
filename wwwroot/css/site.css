@@ -8,11 +8,24 @@ a, .btn-link {
     color: #0366d6;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.bg-success {
+    background-color: rgba(33,148,179,1) !important;
 }
+
+.btn-primary, .btn-success {
+    color: #fff;
+    background-color: #2194b3;
+    border-color: #0f677e;
+}
+    .btn-success:hover,
+    .btn-success:active,
+    .btn-success:focus, 
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:focus {
+        background-color: #1cc2ef;
+        border-color: #0dcaf0;
+    }
 
 .content {
     padding-top: 1.1rem;

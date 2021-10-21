@@ -3,12 +3,18 @@
 }
 
 .top-row {
-    height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    height: 4.5rem;
+    background-color: rgba(0,0,0,0.7);
 }
 
 .navbar-brand {
-    font-size: 1.1rem;
+    font-size: 2.1rem;
+    background-image: url('../images/movable_w_tag.png');
+    height: 100%;
+    width: 80%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
 }
 
 .oi {
@@ -53,6 +59,10 @@
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;
+    }
+
+    .navbar-brand {
+        width: 100%;
     }
 
     .collapse {
