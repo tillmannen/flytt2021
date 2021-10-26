@@ -63,7 +63,7 @@ namespace flytt2021.Data.Services
         public IEnumerable<BoxOwner> GetBoxOwners(string userId)
         {
             var currentUser = _userService.GetUser(userId);
-            return _dbContext.BoxOwners/*.Where(bo => bo.MoveId == currentUser.MoveId)*/.ToList();
+            return _dbContext.BoxOwners.Where(bo => bo.MoveId == currentUser.MoveId).ToList();
         }
         public async Task<BoxOwner> AddBoxOwnerAsync(BoxOwner boxOwner)
         {
@@ -81,7 +81,7 @@ namespace flytt2021.Data.Services
         public IEnumerable<Packer> GetPackers(string userId)
         {
             var currentUser = _userService.GetUser(userId);
-            return _dbContext.Packers/*.Where(mb => mb.MoveId == currentUser.MoveId)*/.ToList();
+            return _dbContext.Packers.Where(mb => mb.MoveId == currentUser.MoveId).ToList();
         }
         public async Task<Packer> AddPackerAsync(Packer packer)
         {

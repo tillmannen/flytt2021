@@ -8,7 +8,7 @@
 
 <AuthorizeView>
     <Authorized>
-        @if (move == null)
+        @if (flyttUser == null)
         {
             <span>Loading...</span>
         }
@@ -16,62 +16,66 @@
         {
             <p class="text-center">
 
-                Hej, @flyttUser.UserName!<br />
-                <br />
-                Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.
+                Hej, @flyttUser.UserName!
             </p>
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="text-center">
+            @if (flyttUser.MoveId != null)
+            {
                 <p>
-                    <div class="list-group">
-                        @if (flyttUser.MoveId != null)
-                        {
-
-                            <a href="boxes/add" class="list-group-item list-group-item-action">
-                                <div class="menu-icon"><span class="oi oi-box"></span></div>
-                                <div class="menu-item">
-                                    <h4 class="list-group-item-heading">Ny flyttkartong</h4>
-                                    <p class="list-group-item-text">L&auml;gg till en ny kartong.</p>
-                                </div>
-                            </a>
-                            <a href="/boxes/list" class="list-group-item list-group-item-action">
-                                <div class="menu-icon"><span class="oi oi-list"></span></div>
-                                <div class="menu-item">
-                                    <h4 class="list-group-item-heading">Visa flyttkartonger</h4>
-                                    <p class="list-group-item-text">Visa eller s&ouml;k bland redan packade l&aring;dor.</p>
-                                </div>
-                            </a>
-                            <a href="/settings" class="list-group-item list-group-item-action">
-                                <div class="menu-icon"><span class="oi oi-cog"></span></div>
-                                <div class="menu-item">
-                                    <h4 class="list-group-item-heading">Inställningar</h4>
-                                    <p class="list-group-item-text">Ändra inställningarna för din flytt.</p>
-                                </div>
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="move/add" class="list-group-item list-group-item-action">
-                                <div class="menu-icon"><span class="oi oi-home"></span></div>
-                                <div class="menu-item">
-                                    <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
-                                    <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
-                                </div>
-                            </a>
-                        }
-
-                    </div>
+                    Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.
                 </p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            }
+                <div class="text-center">
+                    <p>
+                        <div class="list-group">
+                            @if (flyttUser.MoveId != null)
+                            {
 
-                <form method="post" action="Identity/Account/LogOut">
-                    <button type="submit" class="btn btn-primary">Log out</button>
-                </form>
-            </div>
-        }
+                                <a href="boxes/add" class="list-group-item list-group-item-action">
+                                    <div class="menu-icon"><span class="oi oi-box"></span></div>
+                                    <div class="menu-item">
+                                        <h4 class="list-group-item-heading">Ny flyttkartong</h4>
+                                        <p class="list-group-item-text">L&auml;gg till en ny kartong.</p>
+                                    </div>
+                                </a>
+                                <a href="/boxes/list" class="list-group-item list-group-item-action">
+                                    <div class="menu-icon"><span class="oi oi-list"></span></div>
+                                    <div class="menu-item">
+                                        <h4 class="list-group-item-heading">Visa flyttkartonger</h4>
+                                        <p class="list-group-item-text">Visa eller s&ouml;k bland redan packade l&aring;dor.</p>
+                                    </div>
+                                </a>
+                                <a href="/settings" class="list-group-item list-group-item-action">
+                                    <div class="menu-icon"><span class="oi oi-cog"></span></div>
+                                    <div class="menu-item">
+                                        <h4 class="list-group-item-heading">Inställningar</h4>
+                                        <p class="list-group-item-text">Ändra inställningarna för din flytt.</p>
+                                    </div>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="move/add" class="list-group-item list-group-item-action">
+                                    <div class="menu-icon"><span class="oi oi-home"></span></div>
+                                    <div class="menu-item">
+                                        <h4 class="list-group-item-heading">Skapa en ny flytt</h4>
+                                        <p class="list-group-item-text">L&auml;gg till en ny flytt.</p>
+                                    </div>
+                                </a>
+                            }
 
-    </Authorized>
+                        </div>
+                    </p>
+
+                    <form method="post" action="Identity/Account/LogOut">
+                        <button type="submit" class="btn btn-primary">Log out</button>
+                    </form>
+                </div>
+            }
+
+        </Authorized>
     <NotAuthorized>
         <a href="Identity/Account/Login" class="btn btn-primary">Log in</a>
     </NotAuthorized>
@@ -95,10 +99,12 @@
             NavigationManager.NavigateTo("Identity/Account/Login");
         }
         flyttUser = UserService.GetUser(user.Identity.Name);
+        if(flyttUser.MoveId != null)
+        {
+            move = MoveService.GetMove(flyttUser.MoveId.Value);
+            progress = MoveService.GetMoveProgress(user.Identity.Name);
+        }
 
-        move = MoveService.GetMove(flyttUser.MoveId.Value);
-
-        progress = MoveService.GetMoveProgress(user.Identity.Name);
     }
 
 }

@@ -5,37 +5,49 @@
 @using flytt2021.Data.Entities
 
 @inject MovingboxService MovingboxService
+@inject UserService UserService
+@inject NavigationManager NavigationManager
 
 @if (box == null)
 {
     <span>Loading...</span>
 }
-else 
+else
 {
-<h3>Klart!</h3>
+    <h3>Klart!</h3>
 
-<div class="box-added">
-    <p>Den nya lådan har nummer:</p>
-    <div class="box-number" style="background-color: @box.DestinationFloor.BackgroundColorcode; color: @box.DestinationFloor.Colorcode">@Id</div>
-    <div class="new-box-button">
-        <form>
-            <a href="/boxes/add" class="btn btn-primary">Ny Låda</a>
-        </form>
+    <div class="box-added">
+        <p>Den nya lådan har nummer:</p>
+        <div class="box-number" style="background-color: @box.DestinationFloor.BackgroundColorcode; color: @box.DestinationFloor.Colorcode">@Id</div>
+        <div class="new-box-button">
+            <form>
+                <a href="/boxes/add" class="btn btn-primary">Ny Låda</a>
+            </form>
+        </div>
+
     </div>
-
-</div>
 }
 
 
 @code {
     [Parameter]
     public int Id { get; set; }
+
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
     public string color { get; set; } = "black";
 
     private Movingbox box;
 
     protected override async Task OnInitializedAsync()
     {
-        box = await MovingboxService.GetMovingboxAsync(Id);
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        var flyttUser = UserService.GetUser(user.Identity.Name);
+        if (flyttUser.MoveId == null)
+            NavigationManager.NavigateTo("/");
+
+        box = await MovingboxService.GetMovingboxAsync(userid, Id);
     }
 }

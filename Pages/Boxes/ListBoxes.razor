@@ -8,6 +8,7 @@
 
 @inject MovingboxService MovingboxService
 @inject UserService UserService
+@inject NavigationManager NavigationManager
 
 <h1>Flyttkartonger</h1>
 
@@ -80,6 +81,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthStat).User;
+        var flyttUser = UserService.GetUser(user.Identity.Name);
+        if (flyttUser.MoveId == null)
+            NavigationManager.NavigateTo("/");
         movingboxes = await MovingboxService.GetMovingboxesAsync(user.Identity.Name);
     }
 

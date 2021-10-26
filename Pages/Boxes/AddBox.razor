@@ -119,6 +119,10 @@ else
         var user = (await AuthStat).User;
         var userid = user.Identity.Name;
 
+        var flyttUser = UserService.GetUser(user.Identity.Name);
+        if (flyttUser.MoveId == null)
+            NavigationManager.NavigateTo("/");
+
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync(userid);
         packers = MoveService.GetPackers(userid);
         boxOwners = MoveService.GetBoxOwners(userid);
@@ -131,6 +135,7 @@ else
         }
         else
         {
+            newBox.MoveId = flyttUser.MoveId.Value;
             newBox.DestinationFloorId = destinationFloors.FirstOrDefault()?.DestinationFloorId;
             newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower()))?.Id;
             newBox.BoxOwnerId = boxOwners.FirstOrDefault()?.Id;

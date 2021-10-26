@@ -10,6 +10,8 @@ using flytt2021.Areas.Identity;
 using flytt2021.Data.Database;
 using flytt2021.Data.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using flytt2021.Account;
 
 namespace flytt2021
 {
@@ -48,6 +50,9 @@ namespace flytt2021
 
             services.AddScoped<IUserClaimsPrincipalFactory<FlyttUser>, AdditionalUserClaimsPrincipalFactory>();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<FlyttUser>>();
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("SendGrid"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -76,8 +76,8 @@ namespace flytt2021.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = new FlyttUser { UserName = Input.Email, Email = Input.Email };
-                if (!user.UserName.Contains("tillman") && !user.UserName.Contains("jurdell") && !user.UserName.Contains("skager"))
-                    return Page();
+                //if (!user.UserName.Contains("tillman") && !user.UserName.Contains("jurdell") && !user.UserName.Contains("skager"))
+                //    return Page();
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

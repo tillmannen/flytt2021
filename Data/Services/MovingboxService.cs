@@ -36,16 +36,21 @@ namespace flytt2021.Data.Services
             }
             return new List<Movingbox>();
         }
-        public async Task<Movingbox> GetMovingboxAsync(int id)
+        public async Task<Movingbox> GetMovingboxAsync(string userName, int id)
         {
-            var box = await _dbContext.Movingboxes
+            if (userName != null)
+            {
+                var user = _userService.GetUser(userName);
+                var box = await _dbContext.Movingboxes
                 .Include(mb => mb.DestinationFloor)
                 .Include(mb => mb.Packer)
                 .Include(mb => mb.BoxOwner)
                 .Include(mb => mb.Move)
-                .FirstOrDefaultAsync(b => b.MovingboxId == id);
+                .FirstOrDefaultAsync(b => b.MovingboxId == id && b.MoveId == user.MoveId);
 
-            return box;
+                return box;
+            }
+            return new Movingbox();
         }
         public async Task<int> SaveMovingboxAsync(Movingbox newbox)
         {

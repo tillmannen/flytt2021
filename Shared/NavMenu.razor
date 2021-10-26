@@ -1,4 +1,11 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using flytt2021.Data.Services
+@using flytt2021.Data.Database
+
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href=""></a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -12,6 +19,8 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Startsidan
             </NavLink>
         </li>
+        @if (flyttUser.MoveId != null)
+        {
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="boxes/add">
                 <span class="oi oi-box" aria-hidden="true"></span> Ny flyttkartong
@@ -22,16 +31,29 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Visa flyttkartonger
             </NavLink>
         </li>
+        }
     </ul>
 </div>
 
 @code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private FlyttUser flyttUser = null;
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        flyttUser = UserService.GetUser(user.Identity.Name);
     }
 }
