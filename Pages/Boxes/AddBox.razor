@@ -163,7 +163,6 @@ else
         //}
         if (!editContext.Validate()) return;
 
-        newBox.MoveId = 1;
         var newid = await MovingboxService.SaveMovingboxAsync(newBox);
 
         if (newid > 0)

@@ -7,6 +7,10 @@
     "mssql2": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:IdentityConnection"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "AzureKeyVault:AzureKeyVaultUri"
     }
   }
 }

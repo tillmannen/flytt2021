@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using flytt2021.Data;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -11,16 +14,35 @@ namespace flytt2021.Account
 {
     public class EmailSender : IEmailSender
     {
-        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
+        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor, IOptions<AzureKeyVaultSettings> azureKeyVaultSettings)
         {
-            Options = optionsAccessor.Value;
+            AuthMessageSenderOptions = optionsAccessor.Value;
+            AzureKeyVaultSettings = azureKeyVaultSettings.Value;
         }
 
-        public AuthMessageSenderOptions Options { get; }
+        public AuthMessageSenderOptions AuthMessageSenderOptions { get; }
+        public AzureKeyVaultSettings AzureKeyVaultSettings { get; }
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            return Execute(Options.SendGridKey, subject, message, email);
+            if (AzureKeyVaultSettings.UseAzureKeyVault)
+            {
+                if (string.IsNullOrWhiteSpace(AzureKeyVaultSettings.AzureKeyVaultUri))
+                {
+                    throw new ArgumentException("AzureKeyVaultUri is required");
+                }
+
+                if (string.IsNullOrWhiteSpace(AzureKeyVaultSettings.SendGridKey))
+                {
+                    throw new ArgumentException("SendGridKey is required");
+                }
+
+                var secretClient = new SecretClient(new Uri(AzureKeyVaultSettings.AzureKeyVaultUri), new ManagedIdentityCredential());
+                var secret = secretClient.GetSecret(AzureKeyVaultSettings.SendGridKey).Value;
+                AuthMessageSenderOptions.SendGridKey = secret.Value;
+            }
+
+            return Execute(AuthMessageSenderOptions.SendGridKey, subject, message, email);
         }
 
         public Task Execute(string apiKey, string subject, string message, string email)
@@ -28,7 +50,7 @@ namespace flytt2021.Account
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress(Options.FromEmailAddress, Options.FromFriendlyName),
+                From = new EmailAddress(AuthMessageSenderOptions.FromEmailAddress, AuthMessageSenderOptions.FromFriendlyName),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

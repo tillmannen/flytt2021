@@ -53,6 +53,7 @@ namespace flytt2021
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("SendGrid"));
+            services.Configure<Data.AzureKeyVaultSettings>(Configuration.GetSection("AzureKeyVault"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
