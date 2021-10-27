@@ -1,11 +1,13 @@
 ﻿@page
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Config
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
 }
 
 <h1>@ViewData["Title"]</h1>
-
+<p>Debug: UseKeyVault: @Config["AzureKeyVault:UseAzureKeyVault"]</p>
 <div class="row">
     <div class="col-md-4">
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
