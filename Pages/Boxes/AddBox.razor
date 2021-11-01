@@ -1,5 +1,5 @@
 ﻿@page "/boxes/add"
-@page "/boxes/add/{Id:int}"
+@page "/boxes/edit/{Id:int}"
 @attribute [Authorize]
 
 @using flytt2021.Data.Services
@@ -25,6 +25,24 @@ else
 
         <div class="row">
             <div class="col-md-8">
+                <div class="mb-3">
+                    <input type="checkbox" id="AutoNumbering" class="form-check-input" @bind="@AutoNumbering" />
+                    <label for="AutoNumbering" class="form-check-label">
+                        Numrera automatiskt
+                    </label>
+                </div>
+                @if (!AutoNumbering)
+                {
+                    <div class="mb-3">
+                        <label for="Number" class="control-label">Nummer</label>
+                        <input class="form-control form-control-sm" type="number" step="any"
+                               @bind-value:event="onchange" @oninput="NumberChanged" @bind-value="WishedNumber" />
+                        @if (BoxExists)
+                    {
+                        <span>En låda har redan nummer @WishedNumber. Välj ett annat. Om du inte väljer ett annat kommer lådan att få nästa möjliga nummer automatiskt.</span>
+                    }
+                    </div>
+                }
                 <div class="mb-3">
                     <label for="Contents" class="control-label">Innehåll</label>
                     <textarea form="Contents" class="form-control" style="height:200px" @bind="@newBox.Contents"></textarea>
@@ -112,6 +130,10 @@ else
     private IEnumerable<DestinationFloor> destinationFloors;
     private Movingbox newBox = new Movingbox();
 
+    private bool AutoNumbering = true;
+    private int WishedNumber = 0;
+    private bool BoxExists = false;
+
     EditContext editContext;
 
     protected override async Task OnInitializedAsync()
@@ -132,14 +154,18 @@ else
         if (Id != null)
         {
             newBox = existingMovingboxes.FirstOrDefault(b => b.MovingboxId == Id);
+            if (newBox == null)
+                NavigationManager.NavigateTo("/");
         }
         else
         {
             newBox.MoveId = flyttUser.MoveId.Value;
+            newBox.Number = 0;
             newBox.DestinationFloorId = destinationFloors.FirstOrDefault()?.DestinationFloorId;
             newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower()))?.Id;
             newBox.BoxOwnerId = boxOwners.FirstOrDefault()?.Id;
         }
+
         editContext = new EditContext(newBox);
     }
 
@@ -162,11 +188,27 @@ else
         //    editContext.NotifyValidationStateChanged();
         //}
         if (!editContext.Validate()) return;
+        if (!AutoNumbering && !BoxExists)
+            newBox.Number = WishedNumber;
 
         var newid = await MovingboxService.SaveMovingboxAsync(newBox);
 
         if (newid > 0)
             NavigationManager.NavigateTo("/boxes/added/" + newid);
+    }
+    protected void NumberChanged(ChangeEventArgs e)
+    {
+        try
+        {
+            _ = int.TryParse(e.Value.ToString(), out var number);
+            WishedNumber = number;
+            BoxExists = existingMovingboxes.Any(mb => mb.Number == number);
+        }
+        catch
+        {
+            BoxExists = false;
+        }
+
     }
     protected void ResetValidation(ChangeEventArgs e)
     {

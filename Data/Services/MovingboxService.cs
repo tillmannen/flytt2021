@@ -54,10 +54,14 @@ namespace flytt2021.Data.Services
         }
         public async Task<int> SaveMovingboxAsync(Movingbox newbox)
         {
+            if(newbox.Number == 0)
+                newbox.Number = _dbContext.Movingboxes.Where(mb => mb.MoveId == newbox.MoveId).OrderByDescending(mb => mb.Number).FirstOrDefault().Number + 1;
+
             if (newbox.MovingboxId != 0)
                 _dbContext.Movingboxes.Update(newbox);
             else
                 await _dbContext.Movingboxes.AddAsync(newbox);
+            
             _dbContext.SaveChanges();
 
             return newbox.MovingboxId;
