@@ -5,6 +5,7 @@ namespace flytt2021.Data.Entities
     public class Movingbox
     {
         public int MovingboxId { get; set; }
+        public int Number { get; set; }
         public string Marking { get; set; }
         [Required]
         [Display(Name = "Innehåll")]

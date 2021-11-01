@@ -16,7 +16,7 @@ namespace flytt2021.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("flytt2021.Data.Entities.BoxOwner", b =>
@@ -125,6 +125,9 @@ namespace flytt2021.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MoveId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
                         .HasColumnType("int");
 
                     b.Property<int?>("PackerId")
