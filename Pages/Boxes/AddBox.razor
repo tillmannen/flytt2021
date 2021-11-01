@@ -25,23 +25,26 @@ else
 
         <div class="row">
             <div class="col-md-8">
-                <div class="mb-3">
-                    <input type="checkbox" id="AutoNumbering" class="form-check-input" @bind="@AutoNumbering" />
-                    <label for="AutoNumbering" class="form-check-label">
-                        Numrera automatiskt
-                    </label>
-                </div>
-                @if (!AutoNumbering)
+                @if(Id == null)
                 {
+                    <div class="mb-3">
+                        <input type="checkbox" id="AutoNumbering" class="form-check-input" @bind="@AutoNumbering" />
+                        <label for="AutoNumbering" class="form-check-label">
+                            Numrera automatiskt
+                        </label>
+                    </div>
+                    @if (!AutoNumbering)
+                    {
                     <div class="mb-3">
                         <label for="Number" class="control-label">Nummer</label>
                         <input class="form-control form-control-sm" type="number" step="any"
                                @bind-value:event="onchange" @oninput="NumberChanged" @bind-value="WishedNumber" />
                         @if (BoxExists)
-                    {
+                        {
                         <span>En låda har redan nummer @WishedNumber. Välj ett annat. Om du inte väljer ett annat kommer lådan att få nästa möjliga nummer automatiskt.</span>
-                    }
+                        }
                     </div>
+                    }
                 }
                 <div class="mb-3">
                     <label for="Contents" class="control-label">Innehåll</label>
