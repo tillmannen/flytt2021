@@ -85,6 +85,7 @@ else
         if (flyttUser.MoveId == null)
             NavigationManager.NavigateTo("/");
         movingboxes = await MovingboxService.GetMovingboxesAsync(user.Identity.Name);
+        movingboxes = movingboxes.OrderBy(mb => mb.Number);
     }
 
 }
