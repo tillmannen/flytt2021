@@ -58,10 +58,7 @@
 
     EditContext editContext;
     Move newMove;
-    bool AddDestinationFloorPopupVisible = false;
     FlyttUser currentUser;
-
-    DestinationFloor newFloor;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,11 +82,6 @@
         editContext = new EditContext(newMove);
     }
 
-
-    private async void SaveNewFloor()
-    {
-        var savedFloor = await MoveService.AddDestinationFloorAsync(newFloor);
-    }
 
     private async void SaveMove()
     {

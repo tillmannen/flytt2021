@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-flytt2021-00229EF5-C5EC-4825-A5DD-0DABFCA49D50</UserSecretsId>
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
