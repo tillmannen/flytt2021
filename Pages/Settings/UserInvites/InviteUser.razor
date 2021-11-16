@@ -1,0 +1,64 @@
+@page "/move/invite"
+@using Data.Database
+@using Data.Entities
+@using Data.Services
+
+@inject NavigationManager NavigationManager
+@inject MoveService MoveService
+@inject UserService UserService
+
+@attribute [Authorize]
+
+<h3>Bjud in användare</h3>
+
+<p>Här kan du bjuda in en ny användare som får tillgång till din flytt och som då kan hjälpa dig att registrera lådor.</p>
+
+<EditForm Model="@newUser" OnValidSubmit="@InviteUserToMove">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-floating mb-3">
+        <InputText id="userName" class="form-control" @bind-Value="@newUser.UserName" placeholder="Epostadress"></InputText>
+        <label for="userName">Användarnamn (epostadress):</label>
+        <ValidationMessage For="@(() => newUser.UserName)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Bjud in användare</button>
+</EditForm>
+
+@if(invitedUser != null)
+{
+    <p class="alert-success alert-paddings">
+        @invitedUser.UserName är nu inbjuden och kommer att få ett mejl där hen kan svara på inbjudan inom någon minut. 
+    </p>
+}
+
+@code
+{
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+    UserMoveInvite newUser = new UserMoveInvite();
+    UserMoveInvite? invitedUser;
+    private FlyttUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        currentUser = UserService.GetUser(userid);
+
+        if (!currentUser.MoveId.HasValue)
+        {
+            NavigationManager.NavigateTo("/move/add");
+        }
+
+        newUser.MoveId = currentUser.MoveId.Value;
+    }
+    public async void InviteUserToMove()
+    {
+        var success = await MoveService.InviteUserToMoveAsync(newUser, currentUser);
+        invitedUser = new UserMoveInvite{ UserName = newUser.UserName, MoveId = 0};
+        newUser = new UserMoveInvite{MoveId = currentUser.MoveId.Value };
+
+        
+        return;
+    }
+}

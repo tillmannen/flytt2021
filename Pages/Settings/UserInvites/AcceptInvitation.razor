@@ -1,0 +1,51 @@
+@page "/move/acceptinvitation/{MoveId:int}"
+
+@using Data.Database
+@using Data.Entities
+@using Data.Services
+
+@inject NavigationManager NavigationManager
+@inject MoveService MoveService
+@inject UserService UserService
+
+@attribute [Authorize]
+
+<h3>Acceptera inbjudan</h3>
+
+<p>Du har blivit inbjuden av @invitedUser.InvitedByUserName att hjälpa till med deras flytt. Acceptera inbjudan genom att klicka på knappen nedan.</p>
+
+<button class="btn btn-primary" @onclick="AcceptInvitationClicked">Acceptera inbjudan</button>
+
+@code
+{
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }    
+    
+    [Parameter] public int MoveId { get; set; } = 0;
+    UserMoveInvite invitedUser;
+    private FlyttUser currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var user = (await AuthStat).User;
+        var userid = user.Identity.Name;
+
+        invitedUser = await MoveService.GetInvitedUserAsync(userid);
+
+        currentUser = UserService.GetUser(userid);
+
+        if (!currentUser.MoveId.HasValue)
+        {
+            NavigationManager.NavigateTo("/move/add");
+        }
+
+    }
+    public async void AcceptInvitationClicked()
+    {
+        await MoveService.AcceptUserMoveInvitationAsync(invitedUser);
+
+        NavigationManager.NavigateTo("/");
+
+        return;
+    }
+}

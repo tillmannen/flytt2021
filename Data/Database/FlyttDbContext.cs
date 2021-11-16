@@ -12,6 +12,8 @@ public class FlyttDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<UserMove>().HasKey(um => new {um.MoveId, um.UserName});
+        modelBuilder.Entity<UserMoveInvite>().HasKey(um => new {um.MoveId, um.UserName});
     }
 
     public DbSet<Move> Moves { get; set; }
@@ -19,6 +21,8 @@ public class FlyttDbContext : DbContext
     public DbSet<BoxOwner> BoxOwners { get; set; }
     public DbSet<Packer> Packers { get; set; }
     public DbSet<DestinationFloor> DestinationFloors { get; set; }
+    public DbSet<UserMove> UserMoves { get; set; }
+    public DbSet<UserMoveInvite> UserMoveInvites { get; set; }
 
 }
 

@@ -27,6 +27,11 @@ a, .btn-link {
         border-color: #0dcaf0;
     }
 
+.alert-paddings {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 5px 5px;
+}
 .content {
     padding-top: 1.1rem;
 }

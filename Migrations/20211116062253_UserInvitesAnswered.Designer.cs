@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flytt2021.Data.Database;
 
 namespace flytt2021.Migrations
 {
     [DbContext(typeof(FlyttDbContext))]
-    partial class FlyttDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211116062253_UserInvitesAnswered")]
+    partial class UserInvitesAnswered
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,8 +192,8 @@ namespace flytt2021.Migrations
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("InvitedByUserName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsAnswered")
+                        .HasColumnType("bit");
 
                     b.HasKey("MoveId", "UserName");
 

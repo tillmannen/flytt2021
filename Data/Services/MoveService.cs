@@ -1,5 +1,6 @@
 ﻿using flytt2021.Data.Database;
 using flytt2021.Data.Entities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -9,11 +10,13 @@ public class MoveService
 {
     private readonly FlyttDbContext _dbContext;
     private readonly UserService _userService;
+    private readonly IEmailSender _emailSender;
 
-    public MoveService(FlyttDbContext dbContext, UserService userService)
+    public MoveService(FlyttDbContext dbContext, UserService userService, IEmailSender emailSender)
     {
         _dbContext = dbContext;
         _userService = userService;
+        _emailSender = emailSender;
     }
 
 
@@ -119,5 +122,50 @@ public class MoveService
         var currentCount = move.MovingBoxes.Count();
 
         return new MoveProgress { EstimatedBoxCount = estCount, PackedBoxes = currentCount };
+    }
+
+    public async Task<bool> InviteUserToMoveAsync(UserMoveInvite newUser, FlyttUser invitingUser)
+    {
+        if(invitingUser.MoveId == null)
+            return false;
+
+        newUser.MoveId = invitingUser.MoveId.Value;
+        newUser.InvitedByUserName = invitingUser.UserName;
+
+        //save to db
+        var invitedEntity = _dbContext.Add(newUser);
+        await _dbContext.SaveChangesAsync();
+        var invited = invitedEntity.Entity;
+
+        // Send user an email
+        await _emailSender.SendEmailAsync(newUser.UserName, "Inbjudan till Movable.se", $"Du har blivit inbjuden av {invitingUser.UserName} att använda <a href='https://movable.se/move/acceptInvitation/{newUser.MoveId}'>movable.se</a> och hjälpa dem med flytten.<br /><br /><a href='https://movable.se/move/acceptInvitation/{newUser.MoveId}'>Klicka här</a> för att acceptera inbjudan.<br /><br />Med vänlig hälsning<br/>Vi på movable.se");
+
+        // Create accept invitation page
+        
+        // Check if user has unanswered invitations on login and if so - redirect to accept invite page
+
+        return true;
+    }
+
+    public async Task<UserMoveInvite> GetInvitedUserAsync(string userName)
+    {
+        return await _dbContext.UserMoveInvites.FirstOrDefaultAsync(u => u.UserName == userName);
+    }
+
+    public async Task AcceptUserMoveInvitationAsync(UserMoveInvite invitedUser)
+    {
+        // Create entry in UserMoves
+        _dbContext.UserMoves.Add(new UserMove{ UserName = invitedUser.UserName, MoveId = invitedUser.MoveId});
+        
+        // Set user.moveid = invitedUser.MoveId
+        var user = _userService.GetUser(invitedUser.UserName);
+        user.MoveId = invitedUser.MoveId;
+        await _userService.UpdateUserAsync(user);
+
+        // send email to inviting user
+        await _emailSender.SendEmailAsync(invitedUser.InvitedByUserName, "Inbjudan accepterad", $"Din vän {invitedUser.UserName} har nu accepterat inbjudan till movable.se och kan nu hjälpa dig att registrerta flyttkartonger.<br /><br />Tack för att du använder movable.se!<br /><br />Med vänliga hälsningar<br />Vi på movable.se");
+
+        // remove invitation
+        _dbContext.UserMoveInvites.Remove(invitedUser);
     }
 }
