@@ -23,7 +23,19 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="row">
+        @if(Id != null && DateTime.Now.Date >= move.MoveDate)
+        {
+            
+            <button type="button" class="btn btn-primary" @onclick="MarkAsUnpacked">Markera som upppackad</button>
+            <br/>         
+            <br/>
+            @if(!string.IsNullOrEmpty(hideContents)){
+                <button type="button" class="btn btn-secondary" @onclick="ShowContents">Visa innehållet i lådan</button>
+            }
+
+        }
+
+        <div id="contents" class="row @hideContents">
             <div class="col-md-8">
                 @if(Id == null)
                 {
@@ -127,6 +139,7 @@ else
 
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
 
+    private Move move;
     private IEnumerable<Movingbox> existingMovingboxes;
     private IEnumerable<BoxOwner> boxOwners;
     private IEnumerable<Packer> packers;
@@ -139,14 +152,18 @@ else
 
     EditContext editContext;
 
+    string hideContents = "";
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthStat).User;
         var userid = user.Identity.Name;
 
         var flyttUser = UserService.GetUser(user.Identity.Name);
-        if (flyttUser.MoveId == null)
+        if (!flyttUser.MoveId.HasValue)
             NavigationManager.NavigateTo("/");
+
+        move = MoveService.GetMove(flyttUser.MoveId.Value);
 
         existingMovingboxes = await MovingboxService.GetMovingboxesAsync(userid);
         packers = MoveService.GetPackers(userid);
@@ -168,6 +185,9 @@ else
             newBox.PackerId = packers.FirstOrDefault(p => userName.ToLower().Contains(p.Name.ToLower()))?.Id;
             newBox.BoxOwnerId = boxOwners.FirstOrDefault()?.Id;
         }
+
+        if(DateTime.Now.Date >= move.MoveDate)
+            hideContents = "d-none";
 
         editContext = new EditContext(newBox);
     }
@@ -196,7 +216,10 @@ else
 
         var newid = await MovingboxService.SaveMovingboxAsync(newBox);
 
-        if (newid > 0)
+        if(newBox.IsUnpacked)
+            NavigationManager.NavigateTo("/boxes/list");
+
+        else if (newid > 0)
             NavigationManager.NavigateTo("/boxes/added/" + newid);
     }
     protected void NumberChanged(ChangeEventArgs e)
@@ -220,5 +243,15 @@ else
     protected void Cancel()
     {
         newBox = new Movingbox();
+    }
+
+    private void ShowContents()
+    {
+        hideContents = "";
+    }
+    private void MarkAsUnpacked()
+    {
+        newBox.IsUnpacked = true;
+        SaveBox();
     }
 }

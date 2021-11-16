@@ -33,6 +33,10 @@ else
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" @bind="@onlyPrioritized" />
                         <label class="form-check-label">Visa endast de som ska packas upp först</label>
+                    </div>                    
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" @bind="@showUnpacked" />
+                        <label class="form-check-label">Visa även uppackade lådor</label>
                     </div>
                 </div>
             </div>
@@ -71,11 +75,13 @@ else
     public string SearchText = "";
 
     private bool onlyPrioritized = false;
+    private bool showUnpacked = false;
     private IEnumerable<Movingbox> movingboxes;
     private IEnumerable<Movingbox> filteredMovingboxes =>
         movingboxes
         .Where(mb => mb.Contents.ToLower().Contains(SearchText.ToLower()))
-        .Where(mb => !onlyPrioritized || mb.PrioritizedUnpacking == true);
+        .Where(mb => !onlyPrioritized || mb.PrioritizedUnpacking == true)
+        .Where(mb => mb.IsUnpacked == false || showUnpacked == true);
 
 
     protected override async Task OnInitializedAsync()
