@@ -175,9 +175,24 @@ public class MoveService
         await _userService.UpdateUserAsync(user);
 
         // send email to inviting user
-        await _emailSender.SendEmailAsync(invitedUser.InvitedByUserName, "Inbjudan accepterad", $"Din vän {invitedUser.UserName} har nu accepterat inbjudan till movable.se och kan nu hjälpa dig att registrerta flyttkartonger.<br /><br />Tack för att du använder movable.se!<br /><br />Med vänliga hälsningar<br />Vi på movable.se");
+        await _emailSender.SendEmailAsync(invitedUser.InvitedByUserName, "Inbjudan accepterad", $"Din vän {invitedUser.UserName} har nu accepterat inbjudan till movable.se och kan nu hjälpa dig att registrera flyttkartonger.<br /><br />Tack för att du använder movable.se!<br /><br />Med vänliga hälsningar<br />Vi på movable.se");
 
         // remove invitation
         _dbContext.UserMoveInvites.Remove(invitedUser);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+
+    public async Task RemoveUserMoveInvitationAsync(UserMoveInvite invitedUser)
+    {
+        var entity = await _dbContext.UserMoveInvites.FirstOrDefaultAsync(u => u.UserName == invitedUser.UserName && u.MoveId == invitedUser.MoveId);
+
+        // send email to inviting user
+        await _emailSender.SendEmailAsync(invitedUser.InvitedByUserName, "Inbjudan avböjd", $"Din vän {invitedUser.UserName} har avböjt din inbjudan till movable.se.<br /><br />Tack för att du använder movable.se!<br /><br />Med vänliga hälsningar<br />Vi på movable.se");
+
+        // remove invitation
+        _dbContext.UserMoveInvites.Remove(entity);
+        await _dbContext.SaveChangesAsync();
     }
 }

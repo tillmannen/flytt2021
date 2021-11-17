@@ -12,10 +12,17 @@
 
 <h3>Acceptera inbjudan</h3>
 
-<p>Du har blivit inbjuden av @invitedUser.InvitedByUserName att hjälpa till med deras flytt. Acceptera inbjudan genom att klicka på knappen nedan.</p>
+@if(invitedUser == null){
+    <span>Loading...</span>
+}
+else {
 
-<button class="btn btn-primary" @onclick="AcceptInvitationClicked">Acceptera inbjudan</button>
+    <p>Du har blivit inbjuden av @invitedUser.InvitedByUserName att hjälpa till med deras flytt. Acceptera inbjudan genom att klicka på knappen nedan.</p>
 
+    <button class="btn btn-primary" @onclick="AcceptInvitationClicked">Acceptera inbjudan</button><br /><br />
+
+    <button class="btn btn-secondary" @onclick="RemoveInvitationClicked">Ta bort inbjudan</button>
+}
 @code
 {
     [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }    
@@ -43,6 +50,14 @@
     public async void AcceptInvitationClicked()
     {
         await MoveService.AcceptUserMoveInvitationAsync(invitedUser);
+
+        NavigationManager.NavigateTo("/");
+
+        return;
+    }
+    public async void RemoveInvitationClicked()
+    {
+        await MoveService.RemoveUserMoveInvitationAsync(invitedUser);
 
         NavigationManager.NavigateTo("/");
 

@@ -65,6 +65,16 @@
                                     </div>
                                 </a>
                             }
+                            @if(invitation != null)
+                            {
+                                <a href="move/acceptinvitation/@invitation.MoveId" class="list-group-item list-group-item-action">
+                                    <div class="menu-icon"><span class="oi oi-check"></span></div>
+                                    <div class="menu-item">
+                                        <h4 class="list-group-item-heading">Gå med i flytt</h4>
+                                        <p class="list-group-item-text">Du har blivit inbjuden till att hjälpa till med en flytt. Klicka här för att svara på inbjudan.</p>
+                                    </div>
+                                </a>
+                            }
 
                         </div>
                     </p>
@@ -90,6 +100,8 @@
     private Move move;
     private MoveProgress progress;
 
+    private UserMoveInvite invitation;
+
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
@@ -104,6 +116,9 @@
             move = MoveService.GetMove(flyttUser.MoveId.Value);
             progress = MoveService.GetMoveProgress(user.Identity.Name);
         }
+
+        invitation = await MoveService.GetInvitedUserAsync(user.Identity.Name);
+        
 
     }
 
