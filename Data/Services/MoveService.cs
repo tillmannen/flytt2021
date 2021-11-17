@@ -77,6 +77,18 @@ public class MoveService
         return null;
     }
 
+    public async Task SetDefaultBoxOwner(BoxOwner defaultBoxOwner)
+    {
+        var boxOwners = _dbContext.BoxOwners.Where(bo => bo.MoveId == defaultBoxOwner.MoveId);
+        foreach(var bo in boxOwners)
+        {
+            bo.IsDefault = false;
+            if(bo.Id == defaultBoxOwner.Id)
+                bo.IsDefault = true;
+        }
+        await _dbContext.SaveChangesAsync();
+    }
+
     public IEnumerable<Packer> GetPackers(string userId)
     {
         var currentUser = _userService.GetUser(userId);

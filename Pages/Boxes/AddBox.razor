@@ -95,7 +95,7 @@ else
                             {
                                 @foreach (var owner in boxOwners)
                                 {
-                                    <option value="@owner.Id">@owner.Name</option>
+                                    <option value="@owner.Id" selected=@owner.IsDefault>@owner.Name</option>
                                 }
                             }
                         </select>

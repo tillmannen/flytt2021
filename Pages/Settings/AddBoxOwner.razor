@@ -28,12 +28,17 @@
     <ul>
         @foreach (var owner in move.BoxOwners)
         {
-            <li>@owner.Name</li>
+            if(owner.IsDefault){
+                <li><b>@owner.Name</b></li>
+            }
+            else{
+                <li>@owner.Name</li>
+            }
         }
     </ul>
 }
 
-<EditForm Model=" boxOwner" OnValidSubmit="SaveBoxOwner">
+<EditForm Model="boxOwner" OnValidSubmit="SaveBoxOwner">
     <div class="form-floating mb-3">
         <InputText id="name" class="form-control" @bind-Value="@boxOwner.Name" placeholder="Namn"></InputText>
         <label for="name">Namn:</label>
@@ -44,6 +49,20 @@
         <input type="submit" class="btn btn-primary" value="Spara" />
     </div>
 </EditForm>
+<br /><br />
+@if(move.BoxOwners.Count() > 1)
+{
+    <p>Vilken lådägare vill du ska vara förvald när du skapar en ny låda?</p>
+    
+    @foreach (var boxOwner in move.BoxOwners)
+    {
+        <div>
+            <input type="radio" id="@boxOwner.Id" name="defaultBoxOwner" value="@boxOwner.Name" checked=@(boxOwner.IsDefault) @onchange="SetDefault"> 
+            <label for="@boxOwner.Id">@boxOwner.Name</label>
+        </div>
+    }
+}
+<br />
 <br />
 
 @if (IsGuide > 0)
@@ -93,6 +112,15 @@ else
             move.BoxOwners.Add(owner);
 
         boxOwner = new BoxOwner() { MoveId = currentUser.MoveId.Value };
+    }
+
+    private async Task SetDefault(ChangeEventArgs args)
+    {
+        var defaultBoxOwner = move.BoxOwners.FirstOrDefault(bo => bo.Name == args.Value.ToString());
+
+        await MoveService.SetDefaultBoxOwner(defaultBoxOwner);
+
+        //return EventCallback.Empty;
     }
 
     private void Prev()
