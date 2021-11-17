@@ -26,7 +26,14 @@ else
         @if(Id != null && DateTime.Now.Date >= move.MoveDate)
         {
             
-            <button type="button" class="btn btn-primary" @onclick="MarkAsUnpacked">Markera som upppackad</button>
+            <button type="button" class="btn btn-primary" @onclick="ToggleUnpacked">
+                @if(newBox.IsUnpacked){
+                    <span>Markera som ouppackad</span>
+                }else{
+                    <span>Markera som uppackad</span>
+                }
+                
+            </button>
             <br/>         
             <br/>
             @if(!string.IsNullOrEmpty(hideContents)){
@@ -186,7 +193,7 @@ else
             newBox.BoxOwnerId = boxOwners.FirstOrDefault()?.Id;
         }
 
-        if(DateTime.Now.Date >= move.MoveDate)
+        if(Id != null && DateTime.Now.Date >= move.MoveDate)
             hideContents = "d-none";
 
         editContext = new EditContext(newBox);
@@ -249,9 +256,9 @@ else
     {
         hideContents = "";
     }
-    private void MarkAsUnpacked()
+    private void ToggleUnpacked()
     {
-        newBox.IsUnpacked = true;
+        newBox.IsUnpacked = !newBox.IsUnpacked;
         SaveBox();
     }
 }
