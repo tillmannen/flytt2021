@@ -79,7 +79,7 @@ else
     private IEnumerable<Movingbox> movingboxes;
     private IEnumerable<Movingbox> filteredMovingboxes =>
         movingboxes
-        .Where(mb => mb.Contents.ToLower().Contains(SearchText.ToLower()))
+        .Where(mb => mb.Contents.ToLower().Contains(SearchText.ToLower()) || mb.Number.ToString().Contains(SearchText))
         .Where(mb => !onlyPrioritized || mb.PrioritizedUnpacking == true)
         .Where(mb => mb.IsUnpacked == false || showUnpacked == true);
 
