@@ -20,12 +20,24 @@
             </p>
             @if (flyttUser.MoveId != null)
             {
-                <p>
-                    Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.
-                </p>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
+                    @if(move.MoveDate > DateTime.Now){
+                        <p>
+                            Du har packat @progress.PackedBoxes flyttkartonger. Vi uppskattar att du kommer att behöva packa @progress.EstimatedBoxCount kartonger. Det betyder att du kommit @progress.PackedPercentage%.
+                        </p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.PackedPercentage%" aria-valuenow="@progress.PackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    }
+                    else{
+                        <p>
+                            Du har packat upp @progress.UnpackedBoxes flyttkartonger. Bara @progress.LeftToUnpack kvar att packa upp. Det betyder att du kommit @progress.UnpackedPercentage%.
+                        </p>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: @progress.UnpackedPercentage%" aria-valuenow="@progress.UnpackedPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    }
+                    
+
             }
                 <div class="text-center">
                     <p>

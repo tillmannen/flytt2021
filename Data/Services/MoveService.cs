@@ -130,10 +130,14 @@ public class MoveService
 
         var move = GetFullMove(user.MoveId.Value);
 
-        var estCount = move.FromArea.HasValue ? (int)Math.Floor(move.FromArea.Value * 1.5) : 0;
-        var currentCount = move.MovingBoxes.Count();
 
-        return new MoveProgress { EstimatedBoxCount = estCount, PackedBoxes = currentCount };
+        var estCount = move.FromArea.HasValue ? (int)Math.Floor(move.FromArea.Value * 1.5) : 0;
+
+        var totalBoxes = move.MovingBoxes.Count();
+        var unpackedBoxes = move.MovingBoxes.Where(b => b.IsUnpacked).Count();
+        var packedBoxes = move.MovingBoxes.Where(b => !b.IsUnpacked).Count();
+
+        return new MoveProgress { EstimatedBoxCount = estCount, PackedBoxes = packedBoxes, UnpackedBoxes = unpackedBoxes, TotalBoxes = totalBoxes };
     }
 
     public async Task<bool> InviteUserToMoveAsync(UserMoveInvite newUser, FlyttUser invitingUser)
