@@ -64,6 +64,11 @@ public class MoveService
         var currentUser = _userService.GetUser(userId);
         return _dbContext.BoxOwners.Where(bo => bo.MoveId == currentUser.MoveId).ToList();
     }
+    public IEnumerable<BoxOwner> GetBoxOwners(int moveId)
+    {
+        return _dbContext.BoxOwners.Where(bo => bo.MoveId == moveId).ToList();
+    }
+
     public async Task<BoxOwner> AddBoxOwnerAsync(BoxOwner boxOwner)
     {
         if (!_dbContext.BoxOwners.Any(bo => bo.MoveId == boxOwner.MoveId && bo.Name == boxOwner.Name) && !string.IsNullOrEmpty(boxOwner.Name))
@@ -110,6 +115,10 @@ public class MoveService
         var currentUser = _userService.GetUser(userId);
         var destinationFloors = _dbContext.DestinationFloors.Where(mb => mb.MoveId == currentUser.MoveId);
         return destinationFloors;
+    }
+    public IQueryable<DestinationFloor> GetDestinationFloors(int moveId)
+    {
+        return _dbContext.DestinationFloors.Where(mb => mb.MoveId == moveId);
     }
     public async Task<DestinationFloor> AddDestinationFloorAsync(DestinationFloor floor)
     {
