@@ -1,12 +1,12 @@
 ﻿@page "/boxes/list"
 @attribute [Authorize]
 
-
 @using flytt2021.Data.Services
 @using flytt2021.Data.Entities
 @using flytt2021.Data.Database
 
 @inject MovingboxService MovingboxService
+@inject MoveService MoveService
 @inject UserService UserService
 @inject NavigationManager NavigationManager
 
@@ -25,24 +25,80 @@ else
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                    Filter
+                    Filter (Antal lådor som matchar filtret: @filteredMovingboxes.Count())
                 </button>
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" @bind="@onlyPrioritized" />
-                        <label class="form-check-label">Visa endast de som ska packas upp först</label>
-                    </div>                    
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" @bind="@showUnpacked" />
-                        <label class="form-check-label">Visa även uppackade lådor</label>
+                    <div class="card-group">
+                        <div class="card">
+                            <div class="card-header">Allmänt</div>
+                            <div class="card-body">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" @bind="@onlyPrioritized" />
+                                    <label class="form-check-label">Visa endast de som ska packas upp först</label>
+                                </div>                    
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" @bind="@showUnpacked" />
+                                    <label class="form-check-label">Visa även uppackade lådor</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Lådägare</div>
+                            <div class="card-body">
+                                <div class="multiselect">
+                                    <div id="checkboxes">
+                                        @foreach (var owner in this.boxOwners)
+                                        {
+                                            <div class="form-check">
+                                                @if (owner.Selected)
+                                                {
+                                                    <input type="checkbox" class="form-check-input" id="@owner.Id" checked="checked" @onchange="@((e) => BoxOwnerCheckboxChanged(e, owner.Id))" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="form-check-input" id="@owner.Id" @onchange="@((e) => BoxOwnerCheckboxChanged(e, owner.Id))" />
+                                                }
+                                                <label for="@owner.Id" class="form-check-label">
+                                                    @owner.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">Våning</div>
+                            <div class="card-body">
+                                <div class="multiselect">
+                                    <div id="checkboxes">
+                                        @foreach (var floor in this.floors)
+                                        {
+                                            <div class="form-check">
+                                                @if (floor.Selected)
+                                                {
+                                                    <input type="checkbox" class="form-check-input" id="@floor.Id" checked="checked" @onchange="@((e) => FloorCheckboxChanged(e, floor.Id))" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="form-check-input" id="@floor.Id" @onchange="@((e) => FloorCheckboxChanged(e, floor.Id))" />
+                                                }
+                                                <label for="@floor.Id" class="form-check-label">
+                                                    @floor.Name
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <table class="table">
         <thead>
@@ -77,11 +133,15 @@ else
     private bool onlyPrioritized = false;
     private bool showUnpacked = false;
     private IEnumerable<Movingbox> movingboxes;
+    private List<CheckboxListItem> boxOwners { get; set; } = null;
+    private List<CheckboxListItem> floors { get; set; } = null;
     private IEnumerable<Movingbox> filteredMovingboxes =>
         movingboxes
         .Where(mb => mb.Contents.ToLower().Contains(SearchText.ToLower()) || mb.Number.ToString().Contains(SearchText))
         .Where(mb => !onlyPrioritized || mb.PrioritizedUnpacking == true)
-        .Where(mb => mb.IsUnpacked == false || showUnpacked == true);
+        .Where(mb => mb.IsUnpacked == false || showUnpacked == true)
+        .Where(mb => mb.BoxOwnerId.HasValue && boxOwners.Where(bo => bo.Selected).Select(bo => bo.Id).ToList().Contains(mb.BoxOwnerId.Value))
+        .Where(mb => mb.DestinationFloorId.HasValue && floors.Where(f => f.Selected).Select(f => f.Id).ToList().Contains(mb.DestinationFloorId.Value));
 
 
     protected override async Task OnInitializedAsync()
@@ -90,8 +150,29 @@ else
         var flyttUser = UserService.GetUser(user.Identity.Name);
         if (flyttUser.MoveId == null)
             NavigationManager.NavigateTo("/");
+
+        boxOwners = MoveService.GetBoxOwners(flyttUser.MoveId.Value).Select(
+                bo => new CheckboxListItem{ Id = bo.Id, Name = bo.Name, Selected = true }).ToList();
+        floors = MoveService.GetDestinationFloors(flyttUser.MoveId.Value).Select(
+                f => new CheckboxListItem{ Id = f.DestinationFloorId, Name = f.Name, Selected = true }).ToList();
         movingboxes = await MovingboxService.GetMovingboxesAsync(user.Identity.Name);
         movingboxes = movingboxes.OrderBy(mb => mb.Number);
     }
 
+    private void BoxOwnerCheckboxChanged(ChangeEventArgs e, int id)
+    {
+        var boxOwner = this.boxOwners.FirstOrDefault(bo => bo.Id == id);
+        boxOwner.Selected = (bool)e.Value;
+    }
+    private void FloorCheckboxChanged(ChangeEventArgs e, int id)
+    {
+        var floor = this.floors.FirstOrDefault(f => f.Id == id);
+        floor.Selected = (bool)e.Value;
+    }
+
+    private class CheckboxListItem{
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool Selected { get; set; }
+    }
 }
